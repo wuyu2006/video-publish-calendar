@@ -33,9 +33,9 @@
     --shadow-menu:0 16px 40px rgba(15,22,40,.2);
     --dot-muted:#c8d0de;
     --text-disabled:#b3bbcb;--warn-border:#f2ddb0;
-    --acc-product-color:#1e6fd9;--acc-product-solid:#1e6fd9;--acc-product-bg:#e8f1fd;--acc-product-border:#bcd6f7;
-    --acc-company-color:#1f9254;--acc-company-solid:#1f9254;--acc-company-bg:#e7f6ee;--acc-company-border:#b9e3cd;
-    --acc-founder-color:#d97706;--acc-founder-solid:#d97706;--acc-founder-bg:#fdf1e3;--acc-founder-border:#f5d5a8;
+    --acc-product-color:#2563eb;--acc-product-solid:#3b82f6;--acc-product-bg:#eff6ff;--acc-product-border:#bfdbfe;
+    --acc-company-color:#059669;--acc-company-solid:#10b981;--acc-company-bg:#ecfdf5;--acc-company-border:#a7f3d0;
+    --acc-founder-color:#d97706;--acc-founder-solid:#e08a10;--acc-founder-bg:#fff7ed;--acc-founder-border:#fed7aa;
   }
   [data-theme="dark"]{
     --bg-base:#0e1117;--bg-card:#161a22;--bg-card-alt:#1c2028;--bg-input:#1c2028;
@@ -77,8 +77,21 @@
   }
   .wrap{max-width:1080px;margin:0 auto;padding:24px 20px 60px;}
 
-  /* ---------- 顶栏 ---------- */
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
+  /* ---------- 顶部栏 ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:220;
+    background:var(--bg-card);
+    border-bottom:1px solid var(--border-light);
+    box-shadow:0 2px 8px rgba(15,22,40,.05);
+  }
+  .topbar-inner{
+    max-width:1460px;margin:0 auto;padding:11px 28px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  }
+  .topbar-left{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .page-title{font-size:20px;font-weight:700;margin:0;letter-spacing:.2px;line-height:1.25;color:var(--text-primary);}
+  .page-sub{margin:0;color:var(--text-muted);font-size:12px;line-height:1.4;}
+  .topbar-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
   h1{font-size:22px;margin:0 0 4px;}
   .sub{margin:0;color:var(--text-muted);font-size:13px;}
   .actions{display:flex;gap:8px;flex-wrap:wrap;}
@@ -106,44 +119,61 @@
   .status-bar.muted{color:var(--text-muted);}
   .status-bar.muted .dot{background:var(--dot-muted);}
 
-  .cal-nav{display:flex;align-items:center;gap:10px;}
+  .cal-nav{display:flex;align-items:center;gap:8px;}
   .icon-btn{
-    width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);
-    cursor:pointer;font-size:16px;line-height:1;color:var(--text-secondary);font-family:inherit;
+    width:32px;height:32px;border-radius:9px;border:1px solid var(--border);background:var(--bg-card);
+    cursor:pointer;font-size:16px;line-height:1;color:var(--text-secondary);font-family:inherit;transition:.15s;
   }
-  .icon-btn:hover{background:var(--bg-soft);}
-  #monthLabel{font-size:15px;font-weight:600;min-width:98px;text-align:center;}
+  .icon-btn:hover{background:var(--bg-soft);border-color:var(--border-accent);}
+  .month-chip{
+    display:flex;align-items:center;gap:7px;
+    border:1px solid var(--border);border-radius:9px;padding:6px 12px;background:var(--bg-card);
+  }
+  .month-chip svg{width:15px;height:15px;flex:none;color:var(--text-muted);}
+  #monthLabel{
+    font-size:14px;font-weight:600;color:var(--text-primary);min-width:96px;text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
 
-  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;font-size:13px;color:var(--text-secondary);}
-  .legend .item{display:flex;align-items:center;gap:6px;}
-  .legend .swatch{width:14px;height:14px;border-radius:4px;border:1px solid var(--swatch-border);}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;font-size:12.5px;color:var(--text-secondary);}
+  .legend .item{
+    display:flex;align-items:center;gap:7px;
+    background:var(--bg-card);border:1px solid var(--border);border-radius:999px;
+    padding:6px 13px;transition:.15s;cursor:default;
+  }
+  .legend .item:hover{border-color:var(--border-accent);background:var(--bg-hover);}
+  .legend .swatch{width:13px;height:13px;border-radius:4px;border:1px solid var(--swatch-border);}
   .legend .warn-swatch{width:14px;height:14px;border-radius:4px;border:2px solid var(--danger);animation:noVideoPulse 2.2s ease-in-out infinite;}
   .legend .warn-swatch.yellow{border-color:var(--warn);animation:none;box-shadow:0 0 0 3px rgba(224,163,37,.16);}
 
   /* 日历横向滚动容器：窗口过窄时优先保住列宽，避免文字被挤成竖排 */
   .cal-scroll{overflow-x:auto;overflow-y:hidden;padding-bottom:2px;}
 
-  .weekdays{display:grid;grid-template-columns:repeat(7,minmax(122px,1fr));gap:14px;margin-bottom:10px;}
-  .weekdays div{text-align:center;font-size:12.5px;color:var(--text-muted);padding:5px 0;}
+  /* 视口自适应变量：--cell-h 由 autoFit() 按窗口高度动态写入；--col-min 控制 7 列最小列宽 */
+  :root{--cell-h:132px;--col-min:122px;}
 
-  .grid{display:grid;grid-template-columns:repeat(7,minmax(122px,1fr));gap:14px;}
+  .weekdays{display:grid;grid-template-columns:repeat(7,minmax(var(--col-min,122px),1fr));gap:12px;margin-bottom:8px;}
+  .weekdays div{text-align:center;font-size:12.5px;color:var(--text-muted);padding:5px 0;font-weight:500;}
+
+  .grid{display:grid;grid-template-columns:repeat(7,minmax(var(--col-min,122px),1fr));gap:12px;grid-auto-rows:var(--cell-h,132px);}
   .cell{
-    min-height:128px;border-radius:14px;border:1px solid var(--border-light);background:var(--bg-card-alt);
-    padding:11px 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden;transition:.15s;
-    position:relative;
+    min-height:0;height:var(--cell-h,132px);border-radius:12px;border:1px solid var(--border-light);background:var(--bg-card-alt);
+    padding:12px 13px;display:flex;flex-direction:column;gap:8px;overflow:hidden;transition:.15s;
+    position:relative;box-shadow:0 1px 3px rgba(15,22,40,.05);
   }
+  .cell:hover{box-shadow:0 4px 12px rgba(15,22,40,.09);transform:translateY(-1px);}
   .cell.out{opacity:.35;}
   /* 今天：粗蓝描边 + 内渐变 + 「今天」标签，明显区别于普通日期与选中态（普通仅细灰边，选中为蓝细边） */
   .cell.today{
-    border:2px solid var(--accent);
-    box-shadow:0 0 0 4px var(--accent-glow);
+    border:1.5px solid var(--accent);
+    box-shadow:0 0 0 3px var(--accent-glow);
     background:var(--cell-today-bg);
   }
   .cell.today::before{
     content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(180deg,rgba(47,107,255,.14),rgba(47,107,255,0) 64%);
+    background:linear-gradient(180deg,rgba(47,107,255,.10),rgba(47,107,255,0) 64%);
   }
-  .cell.today:hover{box-shadow:0 0 0 5px rgba(47,107,255,.26);}
+  .cell.today:hover{box-shadow:0 0 0 4px rgba(47,107,255,.22);}
   .cell.out.today{opacity:.62;}
   @keyframes noVideoPulse{
     0%{background-color:rgba(229,72,77,.05);border-color:rgba(229,72,77,.55);box-shadow:0 0 0 1px rgba(229,72,77,.18);}
@@ -160,9 +190,10 @@
     font-size:12px;line-height:1;color:var(--danger);
   }
   .cell .dnum{
-    font-size:13.5px;color:var(--text-day);font-weight:500;
+    font-size:15px;color:var(--text-primary);font-weight:600;
     display:flex;align-items:center;gap:6px;position:relative;z-index:1;
   }
+  .cell.out .dnum{color:var(--text-day);font-weight:500;}
   .cell.today .dnum{color:var(--accent);font-weight:800;font-size:15.5px;}
   .today-tag{
     font-size:10.5px;font-weight:700;color:#fff;background:var(--accent);
@@ -170,17 +201,18 @@
     box-shadow:0 1px 4px rgba(47,107,255,.35);flex:none;
   }
   .cell .tag{
-    font-size:12.5px;color:#fff;padding:3px 9px;border-radius:999px;
+    font-size:11.5px;font-weight:600;color:#fff;padding:3px 10px;border-radius:999px;
     align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    letter-spacing:.2px;box-shadow:0 1px 2px rgba(15,22,40,.10);
   }
   .video-name{
-    font-size:12px;line-height:1.45;color:var(--text-body);
+    font-size:12.5px;line-height:1.5;color:var(--text-body);font-weight:500;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
     overflow:hidden;word-break:break-word;
   }
-  .video-name.empty{color:var(--text-disabled);}
+  .video-name.empty{color:var(--text-disabled);font-weight:400;}
   .count-label{
-    font-size:11.5px;line-height:1.45;color:var(--text-secondary);background:var(--count-bg);
+    font-size:11px;line-height:1.45;color:var(--text-secondary);background:var(--count-bg);
     border-radius:7px;padding:3px 8px;align-self:flex-start;
     max-width:100%;white-space:normal;word-break:break-word;
   }
@@ -556,16 +588,23 @@
 
   @media (max-width:680px){
     .wrap{padding:16px 12px 40px;}
-    h1{font-size:19px;}
+    .topbar-inner{padding:10px 14px;gap:10px;}
+    .page-title{font-size:17px;}
+    .page-sub{font-size:11px;}
+    .topbar-right{gap:8px;width:100%;justify-content:space-between;}
+    .month-chip{padding:5px 9px;}
+    #monthLabel{min-width:78px;font-size:13px;}
     .panel{padding:16px 14px;border-radius:14px;}
 
-    .cell{min-height:74px;padding:6px;border-radius:9px;gap:4px;}
-    .cell .tag{font-size:10px;padding:2px 6px;}
-    .cell .dnum{font-size:12px;}
-    .video-name{font-size:10px;}
+    .cell{padding:8px 9px;border-radius:10px;gap:5px;}
+    .cell .tag{font-size:10px;padding:2px 7px;}
+    .cell .dnum{font-size:13px;}
+    .video-name{font-size:10.5px;}
     .count-label{font-size:9.5px;padding:1px 5px;}
     .cell.no-video::after{font-size:11px;top:5px;right:5px;}
-    .grid,.weekdays{gap:5px;}
+    .grid,.weekdays{gap:6px;}
+    .legend{gap:6px;font-size:11.5px;}
+    .legend .item{padding:5px 10px;}
 
     .modal-overlay{padding:0;align-items:flex-end;}
     .modal{max-width:100%;max-height:94vh;border-radius:18px 18px 0 0;transform:translateY(30px);}
@@ -587,35 +626,38 @@
   /* =========================================================
      布局：左侧边栏 + 主区域（v8 重构）
      ========================================================= */
-  .app{display:flex;align-items:flex-start;gap:28px;max-width:1460px;margin:0 auto;padding:32px 28px 72px;}
-  .sidebar{flex:0 0 252px;width:252px;position:sticky;top:24px;display:flex;flex-direction:column;gap:14px;}
+  .app{display:flex;align-items:flex-start;gap:24px;max-width:1460px;margin:0 auto;padding:16px 28px 18px;}
+  .sidebar{flex:0 0 240px;width:240px;position:sticky;top:86px;display:flex;flex-direction:column;gap:14px;}
   .main{flex:1 1 auto;min-width:0;}
 
-  .side-card{background:var(--bg-card);border:1px solid var(--border-panel);border-radius:16px;padding:16px;box-shadow:var(--shadow-card);}
+  .side-card{background:var(--bg-card);border:1px solid var(--border-panel);border-radius:14px;padding:16px;box-shadow:var(--shadow-card);}
   .side-card.brand{padding:18px 16px;}
   .brand-top{display:flex;align-items:center;gap:11px;}
   .brand-logo{
-    width:36px;height:36px;border-radius:11px;flex:0 0 auto;
-    background:linear-gradient(135deg,var(--accent),#6f4bff);
+    width:40px;height:40px;border-radius:12px;flex:0 0 auto;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
     display:flex;align-items:center;justify-content:center;
-    box-shadow:0 6px 14px rgba(47,107,255,.28);
+    box-shadow:0 6px 16px rgba(79,70,229,.30);
   }
-  .brand-logo svg{width:19px;height:19px;display:block;}
-  .sidebar h1{font-size:16px;margin:0;letter-spacing:.2px;}
-  .brand-sub{margin:3px 0 0;font-size:11.5px;color:var(--text-muted);line-height:1.5;}
+  .brand-logo svg{width:21px;height:21px;display:block;}
+  .sidebar h1{font-size:15.5px;margin:0;letter-spacing:.2px;}
+  .brand-sub{margin:3px 0 0;font-size:11px;color:var(--text-muted);line-height:1.5;}
 
-  .side-title{font-size:11.5px;font-weight:700;color:var(--text-faint);letter-spacing:.6px;margin-bottom:10px;}
+  .side-title{font-size:11px;font-weight:700;color:var(--text-faint);letter-spacing:.6px;margin-bottom:10px;}
   .side-nav{display:flex;flex-direction:column;gap:8px;}
   .side-btn{
     display:flex;align-items:center;gap:9px;width:100%;text-align:left;
-    border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);padding:10px 13px;border-radius:11px;
-    font-size:13.5px;cursor:pointer;transition:.15s;font-family:inherit;
+    border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);padding:11px 13px;border-radius:10px;
+    font-size:13px;cursor:pointer;transition:.15s;font-family:inherit;
   }
   .side-btn:hover{background:var(--bg-hover);border-color:var(--border-accent);transform:translateX(1px);}
   .side-btn svg{width:16px;height:16px;flex:0 0 auto;color:var(--text-soft);}
-  .side-btn.primary{background:linear-gradient(135deg,var(--accent),#4a7dff);border-color:transparent;color:#fff;box-shadow:0 5px 14px rgba(47,107,255,.22);}
+  .side-btn.primary{
+    justify-content:center;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-color:transparent;
+    color:#fff;font-weight:600;font-size:13.5px;padding:12px 13px;box-shadow:0 6px 16px rgba(79,70,229,.26);
+  }
   .side-btn.primary svg{color:#fff;}
-  .side-btn.primary:hover{background:linear-gradient(135deg,var(--accent-hover),#3f72f0);}
+  .side-btn.primary:hover{background:linear-gradient(135deg,#4338ca,#6d28d9);transform:none;}
 
   .ov-empty{font-size:12.5px;color:var(--text-muted);line-height:1.6;}
   .ov-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--text-secondary);padding:7px 0;border-bottom:1px dashed var(--border-light);}
@@ -641,11 +683,11 @@
   /* =========================================================
      通知中心（右上角）
      ========================================================= */
-  .notif-center{position:fixed;top:20px;right:22px;z-index:320;}
+  .notif-center{position:relative;display:flex;align-items:center;z-index:320;}
   .notif-btn{
     position:relative;display:flex;align-items:center;justify-content:center;
-    width:42px;height:42px;border-radius:13px;border:1px solid var(--border);background:var(--bg-card);
-    cursor:pointer;transition:.15s;box-shadow:var(--shadow-btn);
+    width:38px;height:38px;border-radius:11px;border:1px solid var(--border);background:var(--bg-card);
+    cursor:pointer;transition:.15s;
   }
   .notif-btn:hover{background:var(--bg-hover);border-color:var(--border-accent);}
   .notif-btn svg{width:19px;height:19px;color:var(--text-secondary);}
@@ -776,9 +818,109 @@
     .side-nav{flex-direction:row;flex-wrap:wrap;}
     .side-btn{width:auto;flex:1 1 160px;}
   }
+
+  /* =========================================================
+     视口自适应档位（v11）：autoFit() 依据窗口高度挂载到 body
+     fit-compact：中等紧凑；fit-tiny：高度不足时进一步压缩
+     ========================================================= */
+  body.fit-compact .app{padding:14px 20px 14px;gap:18px;}
+  body.fit-compact .panel{padding:14px;border-radius:14px;}
+  body.fit-compact .legend{margin-bottom:10px;font-size:11.5px;}
+  body.fit-compact .legend .item{padding:4px 10px;}
+  body.fit-compact .weekdays{gap:8px;margin-bottom:6px;}
+  body.fit-compact .weekdays div{font-size:11px;padding:2px 0;}
+  body.fit-compact .grid{gap:8px;}
+  body.fit-compact .cell{padding:8px 10px;gap:5px;border-radius:10px;}
+  body.fit-compact .cell .dnum{font-size:13.5px;}
+  body.fit-compact .cell.today .dnum{font-size:14px;}
+  body.fit-compact .today-tag{font-size:9.5px;padding:1px 6px;}
+  body.fit-compact .cell .tag{font-size:10.5px;padding:2px 8px;}
+  body.fit-compact .video-name{font-size:11.5px;line-height:1.4;}
+  body.fit-compact .count-label{font-size:10px;padding:2px 6px;line-height:1.35;}
+  body.fit-compact .cell .multi-pub{gap:3px;}
+  body.fit-compact .cell .multi-pub .mi-name{font-size:10.5px;}
+  body.fit-compact .sidebar{gap:10px;top:74px;}
+  body.fit-compact .side-card{padding:12px;}
+  body.fit-compact .side-card.brand{padding:12px;}
+  body.fit-compact .brand-logo{width:34px;height:34px;border-radius:10px;}
+  body.fit-compact .sidebar h1{font-size:14.5px;}
+  body.fit-compact .side-btn{padding:8px 11px;font-size:12.5px;gap:7px;}
+  body.fit-compact .side-title{margin-bottom:8px;}
+  body.fit-compact .ov-row{font-size:12px;padding:5px 0;}
+  body.fit-compact .ov-acc{font-size:12px;}
+  body.fit-compact .side-note{font-size:11px;line-height:1.5;}
+
+  body.fit-tiny .app{padding:10px 16px 10px;gap:14px;}
+  body.fit-tiny .panel{padding:10px;border-radius:12px;}
+  body.fit-tiny .legend{margin-bottom:6px;font-size:11px;gap:6px;}
+  body.fit-tiny .legend .item{padding:3px 8px;}
+  body.fit-tiny .weekdays{gap:6px;margin-bottom:4px;}
+  body.fit-tiny .weekdays div{font-size:10.5px;padding:1px 0;}
+  body.fit-tiny .grid{gap:6px;}
+  body.fit-tiny .cell{padding:4px 7px;gap:3px;border-radius:9px;}
+  body.fit-tiny .cell .multi-pub{gap:1px;}
+  body.fit-tiny .cell .dnum{font-size:12.5px;}
+  body.fit-tiny .cell.today .dnum{font-size:13px;}
+  body.fit-tiny .cell .tag{font-size:10px;padding:1px 7px;}
+  body.fit-tiny .video-name{font-size:10.5px;line-height:1.32;}
+  body.fit-tiny .count-label{font-size:9.5px;padding:1px 5px;line-height:1.3;}
+  body.fit-tiny .cell .multi-pub{gap:2px;}
+  body.fit-tiny .cell .multi-pub .mi-name{font-size:10px;}
+  body.fit-tiny .sidebar{gap:8px;}
+  body.fit-tiny .side-card{padding:10px;}
+  body.fit-tiny .side-btn{padding:6px 10px;font-size:12px;gap:6px;}
+  body.fit-tiny .ov-row{font-size:11.5px;padding:4px 0;}
+  body.fit-tiny .ov-acc{font-size:11.5px;}
+  body.fit-tiny .side-note{font-size:10.5px;line-height:1.45;}
+  /* 极端低矮视口：侧栏允许自身内部滚动，避免撑高整页 */
+  body.fit-tiny .sidebar{max-height:calc(100vh - 96px);overflow-y:auto;}
+  /* 极端低矮视口：进一步压缩日历以外的占位，尽量保证整屏可见 */
+  body.fit-tiny .topbar-inner{padding:7px 16px;gap:10px;}
+  body.fit-tiny .page-title{font-size:17px;}
+  body.fit-tiny .page-sub{display:none;}
+  /* 视口自适应测量期间：临时关闭过渡/动画，避免量到过渡中的中间态高度而误判 */
+  body.fit-measuring *,body.fit-measuring *::before,body.fit-measuring *::after{
+    transition:none !important;animation:none !important;
+  }
 </style>
 </head>
 <body>
+<!-- ================= 顶部栏：标题 + 日历导航 + 通知 ================= -->
+<header class="topbar">
+  <div class="topbar-inner">
+  <div class="topbar-left">
+    <h1 class="page-title">视频发布日历</h1>
+    <p class="page-sub">自动扣减 · 临时调整 · 一键导出</p>
+  </div>
+  <div class="topbar-right">
+    <div class="cal-nav">
+      <button class="icon-btn" id="prevMonth" type="button" aria-label="上个月">‹</button>
+      <span class="month-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"></rect><path d="M3.5 10h17M8 3v3.5M16 3v3.5"></path></svg>
+        <span id="monthLabel"></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M6 9l6 6 6-6"></path></svg>
+      </span>
+      <button class="icon-btn" id="nextMonth" type="button" aria-label="下个月">›</button>
+      <button class="btn small" id="todayBtn" type="button">回到本月</button>
+    </div>
+    <div class="notif-center" id="notifCenter">
+      <button class="notif-btn" id="notifBtn" type="button" aria-label="通知中心">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M13.7 19a2 2 0 0 1-3.4 0"></path></svg>
+        <span class="badge" id="notifBadge" hidden>0</span>
+      </button>
+      <div class="notif-panel" id="notifPanel">
+        <div class="notif-head">
+          <span class="t">通知中心</span>
+          <span class="acts">
+            <button class="notif-act" id="btnNotifReadAll" type="button">一键已读</button>
+          </span>
+        </div>
+        <div id="notifList"></div>
+      </div>
+    </div>
+  </div>
+  </div>
+</header>
 <div class="app">
   <!-- ================= 侧边栏（v8：操作入口统一收拢） ================= -->
   <aside class="sidebar">
@@ -840,16 +982,6 @@
   <!-- ================= 主区域：仅日历 ================= -->
   <main class="main">
     <section class="panel">
-      <div class="panel-head">
-        <h2>发布日历</h2>
-        <div class="cal-nav">
-          <button class="icon-btn" id="prevMonth" type="button" aria-label="上个月">‹</button>
-          <span id="monthLabel"></span>
-          <button class="icon-btn" id="nextMonth" type="button" aria-label="下个月">›</button>
-          <button class="btn small" id="todayBtn" type="button">回到本月</button>
-        </div>
-      </div>
-
       <div class="legend" id="legend"></div>
       <div class="cal-scroll">
         <div class="weekdays">
@@ -936,22 +1068,6 @@
   </div>
 </div>
 
-<!-- ================= 右上角通知中心 ================= -->
-<div class="notif-center" id="notifCenter">
-  <button class="notif-btn" id="notifBtn" type="button" aria-label="通知中心">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M13.7 19a2 2 0 0 1-3.4 0"></path></svg>
-    <span class="badge" id="notifBadge" hidden>0</span>
-  </button>
-  <div class="notif-panel" id="notifPanel">
-    <div class="notif-head">
-      <span class="t">通知中心</span>
-      <span class="acts">
-        <button class="notif-act" id="btnNotifReadAll" type="button">一键已读</button>
-      </span>
-    </div>
-    <div id="notifList"></div>
-  </div>
-</div>
 <div class="notif-menu" id="notifMenu" hidden></div>
 
 <!-- ================= 盘点 / 校准 弹窗 ================= -->
@@ -2294,6 +2410,9 @@ function renderCalendar() {
 
     grid.appendChild(cell);
   }
+
+  // 月份切换后行数会变，重新按视口高度适配
+  autoFit();
 }
 
 /* =========================================================
@@ -2822,23 +2941,6 @@ function renderStatusBar() {
     return wrap;
   };
 
-  // 账号循环顺序（三天一轮）
-  const cycle = document.createElement('span');
-  cycle.className = 'ov-acc';
-  state.slots.forEach((id, i) => {
-    if (i) {
-      const arrow = document.createElement('span');
-      arrow.className = 'cnt';
-      arrow.textContent = '→';
-      cycle.appendChild(arrow);
-    }
-    cycle.appendChild(accNode(id, false));
-    const nm = document.createElement('span');
-    nm.textContent = ACCOUNTS[id].name;
-    cycle.appendChild(nm);
-  });
-  addRow(cycle, `${CYCLE_DAYS} 天一轮`);
-
   // 各账号视频剩余次数（到今天为止，含今天的投影发布），达阈值时黄色提示
   state.slots.forEach(id => {
     const left = accountRemainingNow(id);
@@ -2875,6 +2977,142 @@ function renderAll() {
   refreshNotifications();
   renderNotifCenter();
 }
+
+/* =========================================================
+   视口自适应（v11）
+   目标：任意分辨率 / 比例下，整页无需滚动即可看到完整数据。
+   做法：按窗口高度动态写入 --cell-h（日历行高）、按主区宽度写入
+   --col-min（7 列最小列宽），并在高度不足时逐级挂载
+   body.fit-compact / body.fit-tiny 压缩字号与间距。
+   ========================================================= */
+function cssNum(el, prop, dflt) {
+  if (!el) return dflt;
+  const v = parseFloat(getComputedStyle(el)[prop]);
+  return isNaN(v) ? dflt : v;
+}
+function boxH(el) { return el ? el.getBoundingClientRect().height : 0; }
+
+/* 日历以外的固定占位高度（顶栏及其外边距 + 各级内边距 + 图例 + 星期头 + 行间距） */
+function fitMetrics() {
+  const grid = document.getElementById('calGrid');
+  if (!grid) return null;
+  const rows = Math.max(1, Math.ceil(grid.children.length / 7));
+  const app = document.querySelector('.app');
+  const panel = document.querySelector('.panel');
+  const topbar = document.querySelector('.topbar');
+  const scroll = document.querySelector('.cal-scroll');
+  const gapRow = cssNum(grid, 'rowGap', 12);
+  // 日历上沿到文档顶部的实际距离（已包含顶栏、图例、星期头与各级内边距/外边距）
+  const gridTop = grid.getBoundingClientRect().top + window.scrollY;
+  // 日历下方仍需占用的高度
+  const below = cssNum(scroll, 'paddingBottom', 0)
+    + cssNum(panel, 'paddingBottom', 0) + cssNum(panel, 'borderBottomWidth', 0)
+    + cssNum(app, 'paddingBottom', 0) + cssNum(app, 'borderBottomWidth', 0);
+  return {
+    rows, gapRow,
+    chrome: gridTop + below + gapRow * (rows - 1),
+    topbarH: boxH(topbar) + cssNum(topbar, 'marginBottom', 0),
+    appPad: cssNum(app, 'paddingTop', 0) + cssNum(app, 'paddingBottom', 0)
+  };
+}
+
+/* 当前档位下单元格内容所需的最小高度（避免压缩到内容被裁切） */
+function cellContentNeed() {
+  const grid = document.getElementById('calGrid');
+  let need = 0;
+  grid.querySelectorAll('.cell').forEach(cell => {
+    const padB = cssNum(cell, 'paddingBottom', 0);
+    let bottom = 0;
+    for (const kid of cell.children) {
+      if (getComputedStyle(kid).position === 'absolute') continue;
+      bottom = Math.max(bottom, kid.offsetTop + kid.offsetHeight);
+    }
+    if (bottom > 0) need = Math.max(need, Math.ceil(bottom + padB));
+  });
+  return need;
+}
+
+/* 按主区可用宽度收紧 7 列最小列宽，避免窄屏出现横向滚动 */
+function applyColMin(gapCol) {
+  const root = document.documentElement;
+  const panel = document.querySelector('.panel');
+  if (!panel) return;
+  const inner = panel.clientWidth - cssNum(panel, 'paddingLeft', 0) - cssNum(panel, 'paddingRight', 0);
+  const colMin = Math.floor((inner - gapCol * 6) / 7);
+  root.style.setProperty('--col-min', Math.max(66, Math.min(122, colMin)) + 'px');
+}
+
+let fitLock = false;
+function autoFit() {
+  if (fitLock) return null;
+  const grid = document.getElementById('calGrid');
+  if (!grid || !grid.children.length) return null;
+  fitLock = true;
+
+  const root = document.documentElement;
+  const body = document.body;
+  const sidebar = document.querySelector('.sidebar');
+  // 测量期间关闭过渡/动画，确保读到的是档位生效后的稳定高度
+  body.classList.add('fit-measuring');
+  const TIERS = ['normal', 'compact', 'tiny'];   // 由松到紧，优先使用不压缩的档位
+  const setTier = t => {
+    body.classList.toggle('fit-compact', t === 'compact' || t === 'tiny');
+    body.classList.toggle('fit-tiny', t === 'tiny');
+  };
+
+  let pick = null;
+  for (const t of TIERS) {
+    setTier(t);
+    // 探测高度：避免 flex 压缩子元素导致内容高度被低估
+    root.style.setProperty('--cell-h', '400px');
+    const probe = fitMetrics();
+    applyColMin(probe.gapRow);
+    const m = fitMetrics();
+    const availCellH = Math.floor((window.innerHeight - m.chrome) / m.rows);
+    const need = cellContentNeed();
+    let cellH = Math.max(66, Math.min(Math.max(availCellH, need), 220));
+    root.style.setProperty('--cell-h', cellH + 'px');
+    if (sidebar) sidebar.style.top = Math.round(m.topbarH + 12) + 'px';
+
+    // 收尾校正：按实测文档高度消除亚像素取整与侧栏撑高带来的残余滚动
+    for (let i = 0; i < 3; i++) {
+      const over = document.documentElement.scrollHeight - window.innerHeight;
+      if (over <= 0) break;
+      const floor = Math.max(66, Math.min(need, cellH));
+      const next = Math.max(floor, cellH - Math.ceil(over / m.rows));
+      if (next >= cellH) break;
+      cellH = next;
+      root.style.setProperty('--cell-h', cellH + 'px');
+    }
+    const fits = document.documentElement.scrollHeight <= window.innerHeight;
+    pick = { tier: t, m, availCellH, need, cellH, fits };
+    if (fits) break;
+  }
+
+  const result = {
+    tier: pick.tier, rows: pick.m.rows, cellH: pick.cellH,
+    availCellH: pick.availCellH, need: pick.need, fits: pick.fits,
+    colMin: parseFloat(getComputedStyle(root).getPropertyValue('--col-min')) || 0
+  };
+  body.classList.remove('fit-measuring');
+  void body.offsetHeight;   // 强制刷新，使最终值立即生效
+  fitLock = false;
+  return result;
+}
+
+let fitTimer = null;
+function scheduleFit() {
+  clearTimeout(fitTimer);
+  fitTimer = setTimeout(() => {           // 过渡动画结束前后各复核一次，确保结果稳定
+    autoFit();
+    requestAnimationFrame(() => autoFit());
+    setTimeout(() => autoFit(), 300);
+  }, 120);
+}
+window.addEventListener('resize', scheduleFit);
+window.addEventListener('orientationchange', scheduleFit);
+window.addEventListener('load', () => autoFit());
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => autoFit());
 
 /* =========================================================
    右上角通知中心（v9）
