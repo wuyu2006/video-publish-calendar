@@ -1,0 +1,4797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>视频发布日历</title>
+<style>
+  :root{
+    --bg-base:#f4f6fa;--bg-card:#fff;--bg-card-alt:#fbfcfe;--bg-input:#fff;
+    --border:#e2e6ee;--border-light:#eef1f6;--border-panel:#e8ecf3;
+    --text-primary:#1f2430;--text-secondary:#5a6478;--text-muted:#98a0b3;--text-faint:#a4adbe;
+    --shadow-card:0 1px 2px rgba(20,30,60,.03);
+    --shadow-modal:0 24px 64px rgba(15,22,40,.3);
+    --shadow-notif:0 20px 48px rgba(15,22,40,.18);
+    --accent:#2f6bff;--accent-hover:#255ce6;
+    --danger:#e5484d;--danger-bg:#fff4f3;--danger-border:#ffd9d6;
+    --warn:#e0a325;--warn-bg:#fff8e9;--warn-text:#96700f;
+    --success:#1f9254;--success-bg:#e8f7ee;--success-text:#1f9254;
+    --modal-bg:#fff;--overlay:rgba(18,24,38,.5);
+    --cell-bg:#fbfcfe;--cell-out:rgba(20,30,60,.12);
+    --cell-today-bg:#f2f6ff;--cell-today-border:#2f6bff;
+    --sidebar-sticky:24px;
+    --toast-bg:rgba(28,34,48,.92);
+    --ctx-bg:#fff;
+    --inv-row-bg:#fbfcfe;
+    --bg-soft:#f7f9fc;--bg-hover:#f5f8fe;--bg-hover-2:#f4f7fd;
+    --text-body:#3d4557;--text-day:#7a8499;--text-soft:#8b93a5;
+    --border-dashed:#d9dfea;--border-strong:#c9d4e8;--border-accent:#cfdcf7;
+    --accent-soft:#eef3ff;--accent-ring:rgba(47,107,255,.12);--accent-glow:rgba(47,107,255,.16);
+    --swatch-border:rgba(0,0,0,.06);--count-bg:rgba(255,255,255,.78);--chip-bg:rgba(255,255,255,.75);
+    --shadow-tip:0 12px 34px rgba(15,22,40,.17);
+    --shadow-btn:0 4px 14px rgba(20,30,60,.07);
+    --shadow-menu:0 16px 40px rgba(15,22,40,.2);
+    --dot-muted:#c8d0de;
+    --text-disabled:#b3bbcb;--warn-border:#f2ddb0;
+    --acc-product-color:#1e6fd9;--acc-product-solid:#1e6fd9;--acc-product-bg:#e8f1fd;--acc-product-border:#bcd6f7;
+    --acc-company-color:#1f9254;--acc-company-solid:#1f9254;--acc-company-bg:#e7f6ee;--acc-company-border:#b9e3cd;
+    --acc-founder-color:#d97706;--acc-founder-solid:#d97706;--acc-founder-bg:#fdf1e3;--acc-founder-border:#f5d5a8;
+  }
+  [data-theme="dark"]{
+    --bg-base:#0e1117;--bg-card:#161a22;--bg-card-alt:#1c2028;--bg-input:#1c2028;
+    --border:#2a2f3a;--border-light:#242a34;--border-panel:#22272e;
+    --text-primary:#e2e6ea;--text-secondary:#9aa3b0;--text-muted:#6b7484;--text-faint:#555e6d;
+    --shadow-card:0 1px 2px rgba(0,0,0,.25);
+    --shadow-modal:0 24px 64px rgba(0,0,0,.55);
+    --shadow-notif:0 20px 48px rgba(0,0,0,.4);
+    --accent:#4a9eff;--accent-hover:#2f7ef5;
+    --danger:#ff6b6b;--danger-bg:#2a1212;--danger-border:#3d1a1a;
+    --warn:#ffc958;--warn-bg:#2a2200;--warn-text:#c9a200;
+    --success:#4ae08a;--success-bg:#0a2a14;--success-text:#4ae08a;
+    --modal-bg:#161a22;--overlay:rgba(0,0,0,.65);
+    --cell-bg:#1c2028;--cell-out:rgba(255,255,255,.04);
+    --cell-today-bg:#0c2a5c;--cell-today-border:#4a9eff;
+    --sidebar-sticky:24px;
+    --toast-bg:rgba(10,14,20,.95);
+    --ctx-bg:#1a1f28;
+    --inv-row-bg:#1c2028;
+    --bg-soft:#191d25;--bg-hover:#22272e;--bg-hover-2:#22272e;
+    --text-body:#c8d0de;--text-day:#8b93a5;--text-soft:#7a8499;
+    --border-dashed:#333a47;--border-strong:#3a4150;--border-accent:#3a5a8a;
+    --accent-soft:#16233c;--accent-ring:rgba(74,158,255,.18);--accent-glow:rgba(74,158,255,.22);
+    --swatch-border:rgba(255,255,255,.14);--count-bg:rgba(255,255,255,.08);--chip-bg:rgba(255,255,255,.12);
+    --shadow-tip:0 12px 34px rgba(0,0,0,.55);
+    --shadow-btn:0 4px 14px rgba(0,0,0,.4);
+    --shadow-menu:0 16px 40px rgba(0,0,0,.55);
+    --dot-muted:#4a5262;
+    --text-disabled:#525b6b;--warn-border:#4a3410;
+    --acc-product-color:#5b9dff;--acc-product-solid:#2f6bff;--acc-product-bg:#12233c;--acc-product-border:#27466e;
+    --acc-company-color:#3ddc84;--acc-company-solid:#1f9254;--acc-company-bg:#0e2a1a;--acc-company-border:#1c4630;
+    --acc-founder-color:#f0a94a;--acc-founder-solid:#d97706;--acc-founder-bg:#2a1f08;--acc-founder-border:#4a3410;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg-base);color:var(--text-primary);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 20px 60px;}
+
+  /* ---------- 顶栏 ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
+  h1{font-size:22px;margin:0 0 4px;}
+  .sub{margin:0;color:var(--text-muted);font-size:13px;}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+  .btn{
+    border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);padding:8px 16px;border-radius:10px;
+    font-size:14px;cursor:pointer;transition:.15s;font-family:inherit;white-space:nowrap;
+  }
+  .btn:hover{background:var(--bg-card-alt);}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn.primary:hover{background:var(--accent-hover);}
+  .btn.small{padding:5px 12px;font-size:13px;}
+
+  /* ---------- 面板 ---------- */
+  .panel{background:var(--bg-card);border:1px solid var(--border-panel);border-radius:16px;padding:20px;box-shadow:var(--shadow-card);}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+  .panel-head h2{font-size:16px;margin:0;}
+
+  .status-bar{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    font-size:13px;color:var(--text-secondary);background:var(--bg-soft);border:1px solid var(--border-light);
+    border-radius:10px;padding:9px 14px;margin-bottom:16px;
+  }
+  .status-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
+  .status-bar.muted{color:var(--text-muted);}
+  .status-bar.muted .dot{background:var(--dot-muted);}
+
+  .cal-nav{display:flex;align-items:center;gap:10px;}
+  .icon-btn{
+    width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);
+    cursor:pointer;font-size:16px;line-height:1;color:var(--text-secondary);font-family:inherit;
+  }
+  .icon-btn:hover{background:var(--bg-soft);}
+  #monthLabel{font-size:15px;font-weight:600;min-width:98px;text-align:center;}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;font-size:13px;color:var(--text-secondary);}
+  .legend .item{display:flex;align-items:center;gap:6px;}
+  .legend .swatch{width:14px;height:14px;border-radius:4px;border:1px solid var(--swatch-border);}
+  .legend .warn-swatch{width:14px;height:14px;border-radius:4px;border:2px solid var(--danger);animation:noVideoPulse 2.2s ease-in-out infinite;}
+  .legend .warn-swatch.yellow{border-color:var(--warn);animation:none;box-shadow:0 0 0 3px rgba(224,163,37,.16);}
+
+  /* 日历横向滚动容器：窗口过窄时优先保住列宽，避免文字被挤成竖排 */
+  .cal-scroll{overflow-x:auto;overflow-y:hidden;padding-bottom:2px;}
+
+  .weekdays{display:grid;grid-template-columns:repeat(7,minmax(122px,1fr));gap:14px;margin-bottom:10px;}
+  .weekdays div{text-align:center;font-size:12.5px;color:var(--text-muted);padding:5px 0;}
+
+  .grid{display:grid;grid-template-columns:repeat(7,minmax(122px,1fr));gap:14px;}
+  .cell{
+    min-height:128px;border-radius:14px;border:1px solid var(--border-light);background:var(--bg-card-alt);
+    padding:11px 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden;transition:.15s;
+    position:relative;
+  }
+  .cell.out{opacity:.35;}
+  /* 今天：粗蓝描边 + 内渐变 + 「今天」标签，明显区别于普通日期与选中态（普通仅细灰边，选中为蓝细边） */
+  .cell.today{
+    border:2px solid var(--accent);
+    box-shadow:0 0 0 4px var(--accent-glow);
+    background:var(--cell-today-bg);
+  }
+  .cell.today::before{
+    content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(180deg,rgba(47,107,255,.14),rgba(47,107,255,0) 64%);
+  }
+  .cell.today:hover{box-shadow:0 0 0 5px rgba(47,107,255,.26);}
+  .cell.out.today{opacity:.62;}
+  @keyframes noVideoPulse{
+    0%{background-color:rgba(229,72,77,.05);border-color:rgba(229,72,77,.55);box-shadow:0 0 0 1px rgba(229,72,77,.18);}
+    50%{background-color:rgba(229,72,77,.28);border-color:var(--danger);box-shadow:0 0 0 4px rgba(229,72,77,.30);}
+    100%{background-color:rgba(229,72,77,.05);border-color:rgba(229,72,77,.55);box-shadow:0 0 0 1px rgba(229,72,77,.18);}
+  }
+  .cell.no-video{
+    border:1.5px solid var(--danger);
+    animation:noVideoPulse 2.2s ease-in-out infinite;
+  }
+  .cell.no-video::after{
+    content:'⚠';
+    position:absolute;top:6px;right:7px;
+    font-size:12px;line-height:1;color:var(--danger);
+  }
+  .cell .dnum{
+    font-size:13.5px;color:var(--text-day);font-weight:500;
+    display:flex;align-items:center;gap:6px;position:relative;z-index:1;
+  }
+  .cell.today .dnum{color:var(--accent);font-weight:800;font-size:15.5px;}
+  .today-tag{
+    font-size:10.5px;font-weight:700;color:#fff;background:var(--accent);
+    border-radius:999px;padding:2px 7px;line-height:1.3;letter-spacing:.3px;
+    box-shadow:0 1px 4px rgba(47,107,255,.35);flex:none;
+  }
+  .cell .tag{
+    font-size:12.5px;color:#fff;padding:3px 9px;border-radius:999px;
+    align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .video-name{
+    font-size:12px;line-height:1.45;color:var(--text-body);
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;word-break:break-word;
+  }
+  .video-name.empty{color:var(--text-disabled);}
+  .count-label{
+    font-size:11.5px;line-height:1.45;color:var(--text-secondary);background:var(--count-bg);
+    border-radius:7px;padding:3px 8px;align-self:flex-start;
+    max-width:100%;white-space:normal;word-break:break-word;
+  }
+  .count-label.missing{color:var(--danger);background:var(--danger-bg);font-weight:600;}
+
+  /* 视频预警：剩余条数 ≤ 阈值（黄色感叹号 + 黄色描边） */
+  .cell.warn{border:1.5px solid var(--warn) !important;box-shadow:0 0 0 3px rgba(224,163,37,.14);}
+  .cell.warn::after{
+    content:'!';position:absolute;bottom:8px;right:9px;
+    width:17px;height:17px;border-radius:50%;box-sizing:border-box;
+    background:var(--warn);color:#fff;font-size:12px;font-weight:800;
+    line-height:17px;text-align:center;
+  }
+  .cell.warn .adj-badge{bottom:8px;top:auto;right:31px;}
+  .legend .warn2-swatch{
+    width:14px;height:14px;border-radius:4px;
+    border:2px solid var(--warn);background:var(--warn-bg);position:relative;
+  }
+
+  /* ---------- v10：独立插入 / 内容指定 / 今天图例 ---------- */
+  .cell .adj-badges{
+    position:absolute;top:6px;right:7px;display:flex;gap:4px;align-items:center;
+    justify-content:flex-end;flex-wrap:wrap;max-width:82%;z-index:3;
+  }
+  .cell .adj-badges .adj-badge{position:static;top:auto;right:auto;bottom:auto;white-space:nowrap;}
+  .cell.no-video .adj-badges{right:26px;}
+  .cell.warn .adj-badges{top:6px;bottom:auto;right:7px;}
+  /* 同一天多条发布（基础发布 + 「不影响后续」独立插入） */
+  .cell .multi-pub{display:flex;flex-direction:column;gap:4px;position:relative;z-index:1;}
+  .cell .multi-pub .mi{display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+  .cell .multi-pub .mi-acc{
+    font-size:10px;font-weight:700;color:#fff;border-radius:999px;padding:1.5px 6px;flex:none;
+  }
+  .cell .multi-pub .mi-flag{
+    font-size:9.5px;font-weight:700;color:var(--success);background:var(--success-bg);
+    border-radius:999px;padding:1.5px 5px;flex:none;
+  }
+  .cell .multi-pub .mi-name{
+    font-size:11.5px;color:var(--text-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:100%;min-width:0;
+  }
+  .cell .multi-pub .mi-name.empty{color:var(--text-disabled);}
+  .tip-acc.mini{font-size:11px;padding:1.5px 7px;}
+  .tip-flag{
+    font-size:10.5px;font-weight:700;color:var(--success);background:var(--success-bg);
+    border-radius:999px;padding:1.5px 6px;margin-left:5px;
+  }
+  .adj-badge.mode-standalone{background:var(--success-bg);color:var(--success);}
+  .adj-badge.mode-change{background:var(--warn-bg);color:var(--warn-text);}
+  .extra-block{
+    display:flex;flex-direction:column;gap:5px;
+    border-top:1px dashed rgba(31,146,84,.55);padding-top:6px;margin-top:1px;
+    position:relative;z-index:1;
+  }
+  .extra-head{font-size:10px;font-weight:700;color:var(--success);letter-spacing:.4px;}
+  .extra-block .tag{font-size:11px;padding:2px 7px;}
+  .extra-block .video-name{font-size:11.5px;-webkit-line-clamp:1;}
+  .extra-block .count-label{font-size:10.5px;padding:2px 6px;}
+  .extra-block .count-label.missing{background:var(--danger-bg);}
+  .adj-mode-opts{display:flex;flex-direction:column;gap:8px;}
+  .adj-mode{
+    display:flex;gap:9px;align-items:flex-start;text-align:left;
+    border:1.5px solid var(--border);border-radius:11px;background:var(--bg-card-alt);
+    padding:9px 11px;cursor:pointer;transition:.15s;font:inherit;width:100%;
+  }
+  .adj-mode:hover{border-color:var(--border-strong);}
+  .adj-mode.on{border-color:var(--accent);background:var(--cell-today-bg);box-shadow:0 0 0 3px var(--accent-ring);}
+  .adj-mode .m-ico{font-size:15px;line-height:1.3;flex:none;}
+  .adj-mode .m-t{font-size:12.5px;font-weight:700;color:var(--text-body);display:block;}
+  .adj-mode .m-d{font-size:11.5px;color:var(--text-day);line-height:1.5;margin-top:2px;display:block;}
+  .adj-video-opts{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow:auto;padding-right:2px;}
+  .adj-video{
+    display:flex;align-items:center;gap:8px;text-align:left;
+    border:1.5px solid var(--border);border-radius:10px;background:var(--bg-card);
+    padding:7px 10px;cursor:pointer;font:inherit;transition:.15s;width:100%;
+  }
+  .adj-video:hover{border-color:var(--border-strong);}
+  .adj-video.on{border-color:var(--accent);background:var(--cell-today-bg);}
+  .adj-video .v-name{font-size:12.5px;color:var(--text-body);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .adj-video .v-left{font-size:11px;color:var(--text-day);flex:none;}
+  .adj-video .v-left.zero{color:var(--danger);}
+  .adj-video .v-auto{font-size:11px;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:1px 7px;flex:none;}
+  .adj-new-row{display:flex;gap:8px;align-items:center;}
+  .adj-new-row input{
+    flex:1;min-width:0;border:1.5px solid var(--border);border-radius:9px;background:var(--bg-card);
+    padding:7px 10px;font:inherit;font-size:12.5px;color:var(--text-body);
+  }
+  .adj-new-row input:focus{outline:none;border-color:var(--accent);}
+  .adj-new-row input.num{flex:0 0 78px;}
+  .adj-inline{font-size:11.5px;color:var(--text-day);line-height:1.6;}
+  .extra-hint{font-size:11.5px;color:var(--success);background:var(--success-bg);border-radius:9px;padding:7px 10px;line-height:1.6;margin-top:7px;}
+  .adj-pv-row .pv-vname{font-size:11.5px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .adj-pv-row .pv-vname.empty{color:var(--text-disabled);}
+  .adj-pv-row .pv-tag.green{background:var(--success-bg);color:var(--success);}
+  .adj-pv-row .pv-tag.orange{background:var(--warn-bg);color:var(--warn-text);}
+  .legend .today-swatch{
+    width:16px;height:16px;border-radius:5px;border:2px solid var(--accent);
+    background:var(--cell-today-bg);box-shadow:0 0 0 2px rgba(47,107,255,.16);
+    font-size:9px;font-weight:800;color:var(--accent);line-height:13px;text-align:center;
+  }
+
+  /* =========================================================
+     悬浮弹窗
+     ========================================================= */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:100;
+    background:var(--overlay);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    opacity:0;pointer-events:none;transition:opacity .2s;
+  }
+  .modal-overlay.open{opacity:1;pointer-events:auto;}
+
+  .modal{
+    background:var(--bg-card);border-radius:18px;
+    width:100%;max-width:880px;max-height:92vh;
+    display:flex;flex-direction:column;
+    box-shadow:var(--shadow-modal);
+    transform:translateY(14px) scale(.98);
+    transition:transform .22s cubic-bezier(.2,.8,.3,1);
+    overflow:hidden;
+  }
+  .modal-overlay.open .modal{transform:none;}
+
+  .modal-head{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+    padding:18px 24px;border-bottom:1px solid var(--border-light);flex:0 0 auto;
+  }
+  .modal-head h2{font-size:17px;margin:0;}
+  .modal-head p{margin:5px 0 0;font-size:12px;color:var(--text-muted);line-height:1.5;}
+  .modal-close{
+    width:32px;height:32px;border-radius:9px;border:1px solid var(--border);
+    background:var(--bg-card);cursor:pointer;font-size:18px;color:var(--text-day);
+    line-height:1;font-family:inherit;flex:0 0 auto;
+  }
+  .modal-close:hover{background:var(--bg-soft);color:var(--text-primary);}
+
+  .modal-body{overflow-y:auto;padding:20px 24px;flex:1 1 auto;}
+
+  .modal-section{margin-bottom:26px;}
+  .modal-section:last-child{margin-bottom:0;}
+  .section-label{
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:600;color:var(--text-body);margin-bottom:11px;
+  }
+  .section-label .step{
+    width:18px;height:18px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+    font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  }
+  .section-label .tip{font-weight:400;color:var(--text-faint);font-size:12px;}
+
+  /* ---------- 三天槽位 ---------- */
+  .days{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .slot{
+    border:2px dashed var(--border-dashed);border-radius:14px;min-height:106px;padding:12px;
+    display:flex;flex-direction:column;justify-content:space-between;background:var(--bg-card-alt);
+    transition:.15s;
+  }
+  .slot.filled{border-style:solid;cursor:grab;}
+  .slot.filled:active{cursor:grabbing;}
+  .slot.over{border-color:var(--accent) !important;background:var(--accent-soft) !important;}
+  .slot.dragging{opacity:.4;}
+  .slot-date{font-size:12px;color:var(--text-day);margin-bottom:8px;}
+  .slot-chip{font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .slot-chip .rm{
+    border:none;background:var(--chip-bg);width:22px;height:22px;border-radius:50%;
+    cursor:pointer;font-size:15px;line-height:1;color:var(--text-soft);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-family:inherit;
+  }
+  .slot-chip .rm:hover{background:var(--bg-card);color:var(--danger);}
+  .slot-empty{font-size:13px;color:var(--text-disabled);}
+
+  /* ---------- 账号卡片 ---------- */
+  .cards{display:flex;gap:12px;flex-wrap:wrap;}
+  .card{
+    border:1px solid;border-radius:12px;padding:10px 18px;font-weight:600;font-size:14px;
+    cursor:grab;user-select:none;transition:.15s;display:flex;align-items:center;gap:8px;
+  }
+  .card:active{cursor:grabbing;}
+  .card.placed{opacity:.42;}
+  .card .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+  .card .mark{font-size:12px;opacity:.85;}
+
+  /* ---------- 账号标签页 ---------- */
+  .account-tabs{
+    display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;
+    border-bottom:1px solid var(--border-light);padding-bottom:0;
+  }
+  .account-tab{
+    border:1px solid transparent;border-bottom:none;
+    background:transparent;padding:9px 18px;
+    border-radius:10px 10px 0 0;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:500;
+    color:var(--text-soft);transition:.15s;position:relative;bottom:-1px;
+    display:flex;align-items:center;gap:7px;
+  }
+  .account-tab .tab-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
+  .account-tab:hover{color:var(--text-body);background:var(--bg-soft);}
+  .account-tab.active{
+    font-weight:600;
+    background:var(--bg-card);
+    border-color:var(--border-light);
+    border-bottom-color:var(--bg-card);
+  }
+
+  /* ---------- 视频列表 ---------- */
+  .video-list{display:flex;flex-direction:column;gap:8px;}
+  .video-item{display:grid;grid-template-columns:1fr 88px 34px;gap:8px;align-items:center;}
+  .video-item input{
+    font-family:inherit;font-size:13px;color:var(--text-primary);
+    border:1px solid var(--border);border-radius:9px;padding:8px 10px;background:var(--bg-card);
+    width:100%;outline:none;transition:.15s;
+  }
+  .video-item input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-ring);}
+  .video-item input[type=number]{text-align:center;padding:8px 4px;}
+  .video-item input.count-zero{
+    border-color:var(--danger-border);background:var(--danger-bg);color:var(--danger);font-weight:600;
+  }
+  .item-del{
+    border:1px solid var(--border);background:var(--bg-card);border-radius:9px;cursor:pointer;
+    color:var(--text-muted);font-size:15px;line-height:1;font-family:inherit;transition:.15s;
+    height:100%;
+  }
+  .item-del:hover{background:var(--danger-bg);border-color:var(--danger-border);color:var(--danger);}
+
+  .add-item{
+    border:1px dashed var(--border-dashed);background:var(--bg-card);border-radius:9px;cursor:pointer;
+    color:var(--text-secondary);font-size:13px;font-family:inherit;padding:9px 14px;transition:.15s;
+    align-self:flex-start;margin-top:10px;
+  }
+  .add-item:hover{border-color:var(--accent);color:var(--accent);background:var(--bg-hover);}
+
+  .video-hint{
+    font-size:12px;color:var(--text-soft);line-height:1.65;margin-bottom:12px;
+    background:var(--bg-soft);border-radius:9px;padding:10px 12px;
+  }
+  .video-hint b{color:var(--text-secondary);font-weight:600;}
+
+  .video-warn{
+    margin-top:12px;font-size:12px;color:var(--danger);background:var(--danger-bg);
+    border:1px solid var(--danger-border);border-radius:8px;padding:8px 12px;line-height:1.55;
+  }
+
+  /* ---------- 弹窗底部 ---------- */
+  .modal-foot{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:16px 24px;border-top:1px solid var(--border-light);background:var(--bg-card-alt);flex:0 0 auto;
+  }
+  .modal-foot .status{margin-right:auto;font-size:12px;color:var(--text-soft);}
+
+  /* ---------- 悬停提示 ---------- */
+  .tip{
+    position:fixed;z-index:300;left:0;top:0;
+    background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+    padding:12px 14px;box-shadow:var(--shadow-tip);
+    font-size:13px;max-width:300px;min-width:180px;
+    pointer-events:none;opacity:0;transition:opacity .12s;
+  }
+  .tip.show{opacity:1;}
+  .tip-head{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap;}
+  .tip-acc{
+    font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    border:1px solid;white-space:nowrap;
+  }
+  .tip-date{font-size:12px;color:var(--text-soft);}
+  .tip-order{
+    font-size:11px;color:var(--text-soft);background:var(--bg-soft);border-radius:999px;
+    padding:2px 8px;margin-bottom:9px;display:inline-block;
+  }
+  .tip-video{
+    font-size:13px;font-weight:600;color:var(--text-primary);
+    padding-bottom:9px;margin-bottom:9px;border-bottom:1px dashed var(--border-light);
+    word-break:break-all;
+  }
+  .tip-video.empty{color:var(--text-disabled);font-weight:400;}
+  .tip-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12.5px;margin-top:5px;}
+  .tip-row .k{color:var(--text-soft);}
+  .tip-row .v{color:var(--text-body);font-weight:600;font-variant-numeric:tabular-nums;}
+  .tip-row .v.missing{color:var(--danger);}
+  .tip-warn{
+    margin-top:10px;font-size:12px;color:var(--danger);background:var(--danger-bg);
+    border:1px solid var(--danger-border);border-radius:8px;padding:7px 10px;line-height:1.5;
+  }
+
+  /* ---------- Toast ---------- */
+  #toast{
+    position:fixed;left:50%;bottom:32px;transform:translate(-50%,12px);
+    background:var(--toast-bg);color:#fff;padding:10px 18px;border-radius:10px;
+    font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:200;
+    max-width:calc(100vw - 40px);text-align:center;
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0);}
+
+  /* =========================================================
+     右键菜单：临时调整发布策略
+     ========================================================= */
+  .ctx-menu{
+    position:fixed;z-index:400;min-width:216px;
+    background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+    box-shadow:var(--shadow-menu);
+    padding:6px;font-size:13px;color:var(--text-primary);
+  }
+  .ctx-menu[hidden]{display:none;}
+  .ctx-head{
+    padding:8px 10px 8px;border-bottom:1px solid var(--border-light);margin-bottom:5px;
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  }
+  .ctx-head .ctx-date{font-size:13px;font-weight:600;}
+  .ctx-acc{
+    font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;
+    border:1px solid;white-space:nowrap;
+  }
+  .ctx-note{padding:7px 10px;font-size:12px;color:var(--text-muted);line-height:1.6;}
+  .ctx-item{
+    display:flex;align-items:center;gap:8px;width:100%;text-align:left;
+    border:none;background:transparent;font-family:inherit;font-size:13px;color:var(--text-primary);
+    padding:9px 10px;border-radius:8px;cursor:pointer;transition:.12s;
+  }
+  .ctx-item:hover{background:var(--bg-hover-2);}
+  .ctx-item .ico{width:15px;text-align:center;flex:0 0 auto;color:var(--text-secondary);}
+  .ctx-item .sub-t{font-size:11.5px;color:var(--text-muted);margin-left:auto;white-space:nowrap;}
+  .ctx-item[disabled]{color:var(--text-disabled);cursor:not-allowed;}
+  .ctx-item[disabled]:hover{background:transparent;}
+  .ctx-sep{height:1px;background:var(--border-light);margin:5px 4px;}
+
+  /* 日历角标：该日被临时调整过 */
+  .cell .adj-badge{
+    position:absolute;top:6px;right:7px;font-size:10px;line-height:1;
+    padding:2px 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600;
+  }
+  .cell.no-video .adj-badge{right:26px;}
+
+  /* =========================================================
+     临时调整弹窗
+     ========================================================= */
+  .adj-modal{max-width:540px;}
+  .adj-block{margin-bottom:18px;}
+  .adj-block:last-child{margin-bottom:0;}
+  .adj-label{font-size:13px;font-weight:600;color:var(--text-body);margin-bottom:10px;}
+  .adj-date-input{
+    font-family:inherit;font-size:13px;color:var(--text-primary);border:1px solid var(--border);
+    border-radius:9px;padding:8px 10px;background:var(--bg-card);outline:none;width:100%;max-width:220px;
+    transition:.15s;
+  }
+  .adj-date-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-ring);}
+  .adj-acc-opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:9px;}
+  .adj-acc{
+    display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--bg-card);
+    border-radius:10px;padding:8px 14px;font-family:inherit;font-size:13px;font-weight:600;
+    cursor:pointer;transition:.15s;
+  }
+  .adj-acc .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+  .adj-acc.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-ring);}
+  .adj-preview{
+    background:var(--bg-soft);border:1px solid var(--border-light);border-radius:12px;padding:12px 14px;
+  }
+  .adj-preview .pv-title{font-size:12px;color:var(--text-soft);margin-bottom:8px;}
+  .adj-pv-row{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:4px 0;}
+  .adj-pv-row .pv-date{color:var(--text-day);min-width:78px;font-variant-numeric:tabular-nums;}
+  .adj-pv-row .pv-tag{
+    font-size:11px;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 8px;
+  }
+  .adj-swap-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;}
+  .adj-swap-line .pv-date{font-weight:600;color:var(--text-body);}
+  .adj-swap-line .pv-vname{font-size:12.5px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .adj-swap-line .pv-vname.empty{color:var(--text-disabled);}
+  .adj-help{font-size:12px;color:var(--text-soft);line-height:1.65;margin-top:9px;}
+  .adj-warn{
+    font-size:12px;color:var(--danger);background:var(--danger-bg);border:1px solid var(--danger-border);
+    border-radius:8px;padding:8px 12px;line-height:1.55;
+  }
+  .btn[disabled]{opacity:.5;cursor:not-allowed;}
+
+  @media (max-width:680px){
+    .wrap{padding:16px 12px 40px;}
+    h1{font-size:19px;}
+    .panel{padding:16px 14px;border-radius:14px;}
+
+    .cell{min-height:74px;padding:6px;border-radius:9px;gap:4px;}
+    .cell .tag{font-size:10px;padding:2px 6px;}
+    .cell .dnum{font-size:12px;}
+    .video-name{font-size:10px;}
+    .count-label{font-size:9.5px;padding:1px 5px;}
+    .cell.no-video::after{font-size:11px;top:5px;right:5px;}
+    .grid,.weekdays{gap:5px;}
+
+    .modal-overlay{padding:0;align-items:flex-end;}
+    .modal{max-width:100%;max-height:94vh;border-radius:18px 18px 0 0;transform:translateY(30px);}
+    .modal-overlay.open .modal{transform:none;}
+    .modal-head{padding:16px 18px;}
+    .modal-body{padding:16px 18px;}
+    .modal-foot{padding:14px 18px;}
+    .modal-foot .status{width:100%;margin-right:0;margin-bottom:2px;}
+
+    .days{grid-template-columns:1fr;gap:8px;}
+    .slot{min-height:78px;}
+
+    .video-item{grid-template-columns:1fr 76px 34px;gap:6px;}
+    .video-item input{font-size:13px;padding:7px 9px;}
+
+    .account-tab{padding:8px 12px;font-size:13px;}
+  }
+
+  /* =========================================================
+     布局：左侧边栏 + 主区域（v8 重构）
+     ========================================================= */
+  .app{display:flex;align-items:flex-start;gap:28px;max-width:1460px;margin:0 auto;padding:32px 28px 72px;}
+  .sidebar{flex:0 0 252px;width:252px;position:sticky;top:24px;display:flex;flex-direction:column;gap:14px;}
+  .main{flex:1 1 auto;min-width:0;}
+
+  .side-card{background:var(--bg-card);border:1px solid var(--border-panel);border-radius:16px;padding:16px;box-shadow:var(--shadow-card);}
+  .side-card.brand{padding:18px 16px;}
+  .brand-top{display:flex;align-items:center;gap:11px;}
+  .brand-logo{
+    width:36px;height:36px;border-radius:11px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--accent),#6f4bff);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 14px rgba(47,107,255,.28);
+  }
+  .brand-logo svg{width:19px;height:19px;display:block;}
+  .sidebar h1{font-size:16px;margin:0;letter-spacing:.2px;}
+  .brand-sub{margin:3px 0 0;font-size:11.5px;color:var(--text-muted);line-height:1.5;}
+
+  .side-title{font-size:11.5px;font-weight:700;color:var(--text-faint);letter-spacing:.6px;margin-bottom:10px;}
+  .side-nav{display:flex;flex-direction:column;gap:8px;}
+  .side-btn{
+    display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+    border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);padding:10px 13px;border-radius:11px;
+    font-size:13.5px;cursor:pointer;transition:.15s;font-family:inherit;
+  }
+  .side-btn:hover{background:var(--bg-hover);border-color:var(--border-accent);transform:translateX(1px);}
+  .side-btn svg{width:16px;height:16px;flex:0 0 auto;color:var(--text-soft);}
+  .side-btn.primary{background:linear-gradient(135deg,var(--accent),#4a7dff);border-color:transparent;color:#fff;box-shadow:0 5px 14px rgba(47,107,255,.22);}
+  .side-btn.primary svg{color:#fff;}
+  .side-btn.primary:hover{background:linear-gradient(135deg,var(--accent-hover),#3f72f0);}
+
+  .ov-empty{font-size:12.5px;color:var(--text-muted);line-height:1.6;}
+  .ov-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--text-secondary);padding:7px 0;border-bottom:1px dashed var(--border-light);}
+  .ov-row:last-child{border-bottom:none;padding-bottom:0;}
+  .ov-row:first-child{padding-top:0;}
+  .ov-k{color:var(--text-soft);flex:0 0 auto;}
+  .ov-acc{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-body);}
+  .ov-acc .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
+  .ov-acc .cnt{color:var(--text-muted);}
+  .side-note{font-size:11.5px;color:var(--text-faint);line-height:1.6;padding:0 4px;}
+
+  .xls-sum{font-size:13px;color:var(--text-body);line-height:1.9;}
+  .xls-sum b{color:var(--accent);}
+
+  /* 概览：达到预警阈值的账号 */
+  .ov-warn{color:var(--warn-text);font-weight:800;}
+  .ov-acc.warn{border:1px solid var(--warn-border);background:var(--warn-bg);border-radius:999px;padding:1px 7px 1px 6px;}
+
+  /* 悬停提示：缺视频 / 预警 */
+  .tip-warn{font-size:12px;color:var(--danger);background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:8px;padding:6px 9px;margin-top:6px;line-height:1.55;}
+  .tip-warn.yellow{color:var(--warn-text);background:var(--warn-bg);border-color:var(--warn-border);}
+
+  /* =========================================================
+     通知中心（右上角）
+     ========================================================= */
+  .notif-center{position:fixed;top:20px;right:22px;z-index:320;}
+  .notif-btn{
+    position:relative;display:flex;align-items:center;justify-content:center;
+    width:42px;height:42px;border-radius:13px;border:1px solid var(--border);background:var(--bg-card);
+    cursor:pointer;transition:.15s;box-shadow:var(--shadow-btn);
+  }
+  .notif-btn:hover{background:var(--bg-hover);border-color:var(--border-accent);}
+  .notif-btn svg{width:19px;height:19px;color:var(--text-secondary);}
+  .notif-btn .badge{
+    position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;
+    border-radius:999px;background:var(--danger);color:#fff;font-size:11px;font-weight:700;
+    line-height:19px;text-align:center;box-shadow:0 2px 6px rgba(229,72,77,.35);
+  }
+  .notif-btn .badge[hidden]{display:none;}
+
+  .notif-panel{
+    position:absolute;top:52px;right:0;width:344px;max-height:70vh;overflow:auto;
+    background:var(--bg-card);border:1px solid var(--border-panel);border-radius:16px;
+    box-shadow:var(--shadow-notif);padding:12px;display:none;
+  }
+  .notif-center.open .notif-panel{display:block;}
+  .notif-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 4px 10px;border-bottom:1px solid var(--border-light);margin-bottom:10px;}
+  .notif-head .t{font-size:13.5px;font-weight:700;color:var(--text-primary);}
+  .notif-head .acts{display:flex;gap:8px;align-items:center;}
+  .notif-act{
+    border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);border-radius:999px;
+    padding:4px 11px;font-size:12px;font-family:inherit;cursor:pointer;transition:.15s;
+  }
+  .notif-act:hover{background:var(--bg-hover);border-color:var(--border-accent);color:var(--accent);}
+  .notif-empty{font-size:12.5px;color:var(--text-muted);line-height:1.7;padding:8px 4px;}
+  .notif-item{
+    border:1px solid var(--border-panel);border-left-width:4px;border-radius:12px;
+    padding:10px 12px;margin-bottom:9px;cursor:pointer;transition:.15s;background:var(--bg-card);
+  }
+  .notif-item:last-child{margin-bottom:2px;}
+  .notif-item:hover{background:var(--bg-hover);}
+  .notif-item.lv-red{border-color:var(--danger-border);border-left-color:var(--danger);background:var(--danger-bg);}
+  .notif-item.lv-yellow{border-color:var(--warn-border);border-left-color:var(--warn);background:var(--warn-bg);}
+  .notif-item.read,.notif-item.read.lv-red,.notif-item.read.lv-yellow{
+    border-color:var(--border-light);border-left-color:var(--text-disabled);background:var(--bg-card-alt);
+  }
+  .notif-item .nt{font-size:13px;font-weight:700;color:var(--text-primary);line-height:1.5;}
+  .notif-item.read .nt{color:var(--text-soft);font-weight:600;}
+  .notif-item .nb{font-size:12px;color:var(--text-secondary);line-height:1.65;margin-top:5px;}
+  .notif-item.read .nb{color:var(--text-muted);}
+  .notif-item .nm{font-size:11px;color:var(--text-faint);margin-top:6px;display:flex;justify-content:space-between;gap:8px;}
+  .notif-item .nm .st{color:var(--text-disabled);}
+
+  .notif-menu{
+    position:fixed;z-index:420;min-width:150px;background:var(--bg-card);border:1px solid var(--border);
+    border-radius:11px;box-shadow:var(--shadow-menu);padding:5px;font-size:13px;
+  }
+  .notif-menu[hidden]{display:none;}
+  .notif-menu button{
+    display:block;width:100%;text-align:left;border:none;background:transparent;
+    font-family:inherit;font-size:13px;color:var(--text-primary);padding:8px 10px;border-radius:8px;cursor:pointer;
+  }
+  .notif-menu button:hover{background:var(--bg-hover-2);}
+
+  /* =========================================================
+     盘点 / 校准 弹窗
+     ========================================================= */
+  .inv-modal{max-width:660px;}
+  .inv-note{font-size:12.5px;color:var(--text-secondary);background:var(--bg-soft);border:1px solid var(--border-light);border-radius:11px;padding:10px 13px;line-height:1.7;margin-bottom:14px;}
+  .inv-acc{margin-bottom:16px;}
+  .inv-acc:last-child{margin-bottom:0;}
+  .inv-acc-head{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+  .inv-acc-head .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
+  .inv-acc-head .an{font-size:13.5px;font-weight:700;color:var(--text-body);}
+  .inv-acc-head .sum{font-size:12px;color:var(--text-soft);margin-left:auto;}
+  .inv-table{width:100%;border-collapse:separate;border-spacing:0 6px;}
+  .inv-table th{
+    font-size:11.5px;font-weight:600;color:var(--text-faint);text-align:left;padding:0 8px 2px;
+  }
+  .inv-table td{padding:0 8px;}
+  .inv-table .vn{font-size:13px;color:var(--text-primary);line-height:1.5;}
+  .inv-table .sys{font-size:12.5px;color:var(--text-secondary);font-variant-numeric:tabular-nums;}
+  .inv-row-bg{background:var(--bg-card-alt);}
+  .inv-input{
+    font-family:inherit;font-size:13px;color:var(--text-primary);border:1px solid var(--border);
+    border-radius:9px;padding:7px 9px;background:var(--bg-card);outline:none;width:96px;
+    text-align:center;font-variant-numeric:tabular-nums;transition:.15s;
+  }
+  .inv-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-ring);}
+  .inv-delta{font-size:12px;color:var(--text-muted);white-space:nowrap;}
+  .inv-delta.up{color:var(--success);font-weight:600;}
+  .inv-delta.down{color:var(--danger);font-weight:600;}
+
+  /* =========================================================
+     设置弹窗（占位）
+     ========================================================= */
+  .set-modal{max-width:560px;}
+  .set-ph{font-size:13px;color:var(--text-secondary);line-height:1.85;background:var(--bg-soft);border:1px solid var(--border-light);border-radius:12px;padding:14px 16px;}
+  .set-ph b{color:var(--accent);}
+  .set-list{margin:10px 0 0;padding-left:18px;font-size:12.5px;color:var(--text-soft);line-height:1.9;}
+
+  /* ====== 主题单选按钮 ====== */
+  .set-section{margin-bottom:16px;}
+  .set-label{font-size:14px;font-weight:600;margin-bottom:8px;color:var(--text-primary);}
+  .theme-radio-group{display:flex;gap:12px;flex-wrap:wrap;}
+  .theme-radio-label{
+    display:flex;align-items:center;gap:8px;padding:8px 16px;
+    border:1px solid var(--border);border-radius:8px;cursor:pointer;
+    font-size:14px;color:var(--text-primary);background:var(--bg-input);
+    transition:.15s;
+  }
+  .theme-radio-label:hover{background:var(--bg-card-alt);}
+  .theme-radio-label input[type="radio"]{
+    appearance:none;-webkit-appearance:none;
+    width:18px;height:18px;border:2px solid var(--border);border-radius:50%;
+    position:relative;cursor:pointer;flex-shrink:0;
+    transition:.15s;
+  }
+  .theme-radio-label input[type="radio"]::after{
+    content:'';position:absolute;top:50%;left:50%;
+    width:8px;height:8px;background:transparent;border-radius:50%;
+    transform:translate(-50%,-50%);transition:.15s;
+  }
+  .theme-radio-label input[type="radio"]:checked{
+    border-color:var(--accent);background:var(--accent);
+  }
+  .theme-radio-label input[type="radio"]:checked::after{background:#fff;}
+  .theme-radio-label input[type="radio"]:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .theme-radio-text{font-size:14px;user-select:none;}
+
+  /* ====== 设置弹窗适配 ====== */
+  .set-cur{font-size:14px;color:var(--text-secondary);margin:0 0 12px;}
+  .set-ph{font-size:13px;color:var(--text-muted);margin:0 0 12px;line-height:1.7;}
+
+  @media (max-width:900px){
+    .app{flex-direction:column;gap:16px;padding:20px 16px 48px;}
+    .sidebar{position:static;width:100%;flex:0 0 auto;}
+    .side-nav{flex-direction:row;flex-wrap:wrap;}
+    .side-btn{width:auto;flex:1 1 160px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ================= 侧边栏（v8：操作入口统一收拢） ================= -->
+  <aside class="sidebar">
+    <div class="side-card brand">
+      <div class="brand-top">
+        <span class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4.5" width="18" height="17" rx="3"></rect>
+            <path d="M8 2.5v4M16 2.5v4M3 10h18"></path>
+            <path d="M8.5 14.5h3"></path>
+          </svg>
+        </span>
+        <div>
+          <h1>视频发布日历</h1>
+          <p class="brand-sub">自动扣减 · 临时调整 · 一键导出</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-card">
+      <div class="side-title">操作</div>
+      <div class="side-nav">
+        <button class="side-btn primary" id="btnOpenModal" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+          设置发布计划
+        </button>
+        <button class="side-btn" id="btnInventory" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5h6a1.5 1.5 0 0 1 1.5 1.5v.5h2A1.5 1.5 0 0 1 20 8v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5h2V6A1.5 1.5 0 0 1 9 4.5z"></path><path d="M9 4.5v3h6v-3"></path><path d="M8 12.5l2 2 4-4"></path></svg>
+          盘点 / 校准
+        </button>
+        <button class="side-btn" id="btnExportExcel" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7.5z"></path><path d="M14 2.5v5h5"></path><path d="M9 13l3 3M12 13l-3 3"></path></svg>
+          导出为 Excel
+        </button>
+        <button class="side-btn" id="btnExport" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v3.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V15"></path><path d="M7.5 10.5 12 15l4.5-4.5"></path><path d="M12 15V3.5"></path></svg>
+          导出存档（JSON）
+        </button>
+        <button class="side-btn" id="btnImport" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v3.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V15"></path><path d="M7.5 7.5 12 3l4.5 4.5"></path><path d="M12 3v11.5"></path></svg>
+          导入存档（JSON）
+        </button>
+        <button class="side-btn" id="btnSettings" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.51 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.09a1.7 1.7 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"></path></svg>
+          设置
+        </button>
+        <input type="file" id="fileInput" accept=".json,application/json" hidden>
+      </div>
+    </div>
+
+    <div class="side-card">
+      <div class="side-title">概览</div>
+      <div id="sideStatus"></div>
+    </div>
+
+    <p class="side-note">右键日历可临时调整排期（互换 / 插入），或对今天及之前的日期标记「已发布 / 未发」。数据自动保存在本机浏览器。</p>
+  </aside>
+
+  <!-- ================= 主区域：仅日历 ================= -->
+  <main class="main">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>发布日历</h2>
+        <div class="cal-nav">
+          <button class="icon-btn" id="prevMonth" type="button" aria-label="上个月">‹</button>
+          <span id="monthLabel"></span>
+          <button class="icon-btn" id="nextMonth" type="button" aria-label="下个月">›</button>
+          <button class="btn small" id="todayBtn" type="button">回到本月</button>
+        </div>
+      </div>
+
+      <div class="legend" id="legend"></div>
+      <div class="cal-scroll">
+        <div class="weekdays">
+          <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
+        </div>
+        <div class="grid" id="calGrid"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= 悬浮弹窗 ================= -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <div>
+        <h2 id="modalTitle">设置发布计划</h2>
+        <p>① 拖动账号排列近三天顺序　② 按账号添加视频，每个视频的「数量」代表剩余可发布次数（发布日次日自动扣减 1）</p>
+      </div>
+      <button class="modal-close" id="btnCloseModal" type="button" aria-label="关闭">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="section-label">
+          <span class="step">1</span>排期顺序
+          <span class="tip">（从今天开始，三天排满后按此顺序循环）</span>
+        </div>
+        <div class="days" id="daySlots"></div>
+      </div>
+
+      <div class="modal-section">
+        <div class="section-label">
+          <span class="step">2</span>账号卡片
+          <span class="tip">（拖拽到上方格子，或点击自动填入空位）</span>
+        </div>
+        <div class="cards" id="cardPool"></div>
+      </div>
+
+      <div class="modal-section">
+        <div class="section-label">
+          <span class="step">3</span>视频列表
+          <span class="tip">（每个账号一条流水线，按顺序在周期中轮播）</span>
+        </div>
+        <div id="contentEditor"></div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <span class="status" id="modalStatus"></span>
+      <button class="btn" id="btnClear" type="button">清空重排</button>
+      <button class="btn" id="btnCancel" type="button">取消</button>
+      <button class="btn primary" id="btnConfirm" type="button">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 导出为 Excel 弹窗（v8） ================= -->
+<div class="modal-overlay" id="xlsOverlay">
+  <div class="modal xls-modal" role="dialog" aria-modal="true" aria-labelledby="xlsTitle">
+    <div class="modal-head">
+      <div>
+        <h2 id="xlsTitle">导出为 Excel</h2>
+        <p>选择要导出的月份，导出该月含互换 / 插入等临时调整在内的完整发布情况</p>
+      </div>
+      <button class="modal-close" id="btnCloseXls" type="button" aria-label="关闭">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="section-label"><span class="step">1</span>选择月份</div>
+        <input class="adj-date-input" type="month" id="xlsMonth">
+        <div class="adj-help">直接通过上方日期框选择任意月份；尚未到来的月份按当前计划投影导出（含临时调整后的排期）。</div>
+      </div>
+      <div class="modal-section">
+        <div class="section-label"><span class="step">2</span>导出内容预览</div>
+        <div class="adj-preview" id="xlsPreview"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <span class="status" id="xlsStatus"></span>
+      <button class="btn" id="btnXlsCancel" type="button">取消</button>
+      <button class="btn primary" id="btnXlsConfirm" type="button">导出 Excel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 右上角通知中心 ================= -->
+<div class="notif-center" id="notifCenter">
+  <button class="notif-btn" id="notifBtn" type="button" aria-label="通知中心">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"></path><path d="M13.7 19a2 2 0 0 1-3.4 0"></path></svg>
+    <span class="badge" id="notifBadge" hidden>0</span>
+  </button>
+  <div class="notif-panel" id="notifPanel">
+    <div class="notif-head">
+      <span class="t">通知中心</span>
+      <span class="acts">
+        <button class="notif-act" id="btnNotifReadAll" type="button">一键已读</button>
+      </span>
+    </div>
+    <div id="notifList"></div>
+  </div>
+</div>
+<div class="notif-menu" id="notifMenu" hidden></div>
+
+<!-- ================= 盘点 / 校准 弹窗 ================= -->
+<div class="modal-overlay" id="invOverlay">
+  <div class="modal inv-modal" role="dialog" aria-modal="true" aria-labelledby="invTitle">
+    <div class="modal-head">
+      <div>
+        <h2 id="invTitle">盘点 / 校准</h2>
+        <p id="invSub"></p>
+      </div>
+      <button class="modal-close" id="btnCloseInv" type="button" aria-label="关闭">×</button>
+    </div>
+    <div class="modal-body" id="invBody"></div>
+    <div class="modal-foot">
+      <span class="status" id="invNote">校准只修正「剩余条数」基准，不会改动已发布记录</span>
+      <button class="btn" id="btnInvReset" type="button">按系统值重置</button>
+      <button class="btn" id="btnInvCancel" type="button">取消</button>
+      <button class="btn primary" id="btnInvConfirm" type="button">确认校准</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 设置弹窗（占位） ================= -->
+<div class="modal-overlay" id="setOverlay">
+  <div class="modal set-modal" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <div class="modal-head">
+      <div>
+        <h2 id="setTitle">设置</h2>
+        <p>功能规划中，先占个位置</p>
+      </div>
+      <button class="modal-close" id="btnCloseSet" type="button" aria-label="关闭">×</button>
+    </div>
+    <div class="modal-body" id="setBody"></div>
+    <div class="modal-foot">
+      <span class="status"></span>
+      <button class="btn primary" id="btnSetOk" type="button">知道了</button>
+      <button class="btn" id="btnReset" type="button" style="margin-left:12px;color:var(--danger);border-color:var(--danger);">一键重置</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 重置确认弹窗 ================= -->
+<div class="modal-overlay" id="resetConfirmOverlay" hidden>
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-head">
+      <h2 style="font-size:16px;margin:0;">确认重置</h2>
+      <button class="modal-close" id="btnResetCancel" type="button">×</button>
+    </div>
+    <div class="modal-body" style="padding:20px;">
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin:0 0 16px;">
+        此操作将清空所有发布数据（视频内容、发布记录、临时调整、盘点校准、通知记录等），但保留设置字段。确定要执行吗？
+      </p>
+      <p style="font-size:13px;color:var(--text-body);font-weight:600;margin:0 0 10px;">请输入「我确定」以确认：</p>
+      <input class="adj-date-input" id="resetConfirmInput" type="text" placeholder="我确定" maxlength="3" autocomplete="off">
+      <p id="resetConfirmError" style="font-size:12px;color:var(--danger);margin:8px 0 0;display:none;"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="btnResetConfirmCancel" type="button">取消</button>
+      <button class="btn primary" id="btnResetConfirmOk" type="button">确定重置</button>
+    </div>
+  </div>
+</div>
+
+<!-- 悬停提示 -->
+<div class="tip" id="tip"></div>
+
+<!-- ================= 日历右键菜单（临时调整发布策略） ================= -->
+<div class="ctx-menu" id="ctxMenu" hidden></div>
+
+<!-- ================= 临时调整发布策略弹窗 ================= -->
+<div class="modal-overlay" id="adjOverlay">
+  <div class="modal adj-modal" role="dialog" aria-modal="true" aria-labelledby="adjTitle">
+    <div class="modal-head">
+      <div>
+        <h2 id="adjTitle">临时调整发布策略</h2>
+        <p id="adjSub"></p>
+      </div>
+      <button class="modal-close" id="btnCloseAdj" type="button" aria-label="关闭">×</button>
+    </div>
+    <div class="modal-body" id="adjBody"></div>
+    <div class="modal-foot">
+      <span class="status" id="adjNote">调整只影响今天之后的发布，已结算的日期不受影响</span>
+      <button class="btn" id="btnAdjCancel" type="button">取消</button>
+      <button class="btn primary" id="btnAdjConfirm" type="button">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   常量
+   ========================================================= */
+const KEY = 'video-publish-calendar-v5';
+const LEGACY_KEYS = [
+  'video-publish-calendar-v4',
+  'video-publish-calendar-v3',
+  'video-publish-calendar-v2',
+  'video-publish-calendar-v1'
+];
+
+const DAY_LABELS = ['今天', '明天', '后天'];
+const CYCLE_DAYS = 3;        // 三天一个轮回（三个账号各发一次）
+
+const ACCOUNTS = {
+  product: { name: '产品号',   color: 'var(--acc-product-color)', solid: 'var(--acc-product-solid)', bg: 'var(--acc-product-bg)', border: 'var(--acc-product-border)' },
+  company: { name: '企业号',   color: 'var(--acc-company-color)', solid: 'var(--acc-company-solid)', bg: 'var(--acc-company-bg)', border: 'var(--acc-company-border)' },
+  founder: { name: '创始人号', color: 'var(--acc-founder-color)', solid: 'var(--acc-founder-solid)', bg: 'var(--acc-founder-bg)', border: 'var(--acc-founder-border)' }
+};
+const IDS = ['product', 'company', 'founder'];
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const emptyCounts = () => ({ product: 0, company: 0, founder: 0 });
+
+/* =========================================================
+   日期工具
+   ========================================================= */
+const pad = n => String(n).padStart(2, '0');
+const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const todayStr = () => fmt(new Date());
+const addDays = (s, n) => { const d = parseDate(s); d.setDate(d.getDate() + n); return fmt(d); };
+const daysBetween = (a, b) => Math.round((parseDate(b) - parseDate(a)) / 86400000);
+const formatCN = s => { const d = parseDate(s); return `${d.getMonth() + 1}月${d.getDate()}日`; };
+const mod = (n, m) => ((n % m) + m) % m;
+
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+/* =========================================================
+   数据规范
+   ========================================================= */
+function sanitizeCount(v) {
+  const n = Math.round(Number(v));
+  if (!Number.isFinite(n) || n < 0) return 0;
+  return Math.min(999, n);
+}
+
+function defaultVideos() {
+  return [{ name: '', count: 1 }];
+}
+
+function defaultContents() {
+  const out = {};
+  IDS.forEach(id => { out[id] = defaultVideos(); });
+  return out;
+}
+
+/* 规范化单个账号的视频列表
+   兼容旧版（元素含 items 字段），合并拍平为新格式 */
+function normalizeVideos(src) {
+  if (!Array.isArray(src)) return defaultVideos();
+
+  const isOldFormat = src.some(it =>
+    it && typeof it === 'object' && Array.isArray(it.items)
+  );
+
+  if (isOldFormat) {
+    const flat = [];
+    src.forEach(t => {
+      if (!t || !Array.isArray(t.items)) return;
+      t.items.forEach(it => {
+        const name = (it && typeof it.name === 'string') ? it.name : '';
+        const count = sanitizeCount(it && it.count);
+        if (name.trim() || count > 0) flat.push({ name, count });
+      });
+    });
+    return flat.length ? flat : defaultVideos();
+  }
+
+  const out = src.slice(0, 30).map(it => ({
+    name: (it && typeof it.name === 'string') ? it.name : '',
+    count: sanitizeCount(it && it.count)
+  }));
+
+  return out.length ? out : defaultVideos();
+}
+
+function normalizeContents(c) {
+  const out = {};
+  const src = (c && typeof c === 'object') ? c : {};
+  IDS.forEach(id => { out[id] = normalizeVideos(src[id]); });
+  return out;
+}
+
+/* 指定内容：合法的内容下标（非负整数）；越界不在这里判，取用时回退为自动轮播 */
+function normVideoIdx(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const n = Math.floor(Number(v));
+  return (Number.isFinite(n) && n >= 0) ? n : null;
+}
+
+/* 临时调整操作（v7 基础语义 / v10 扩展）：按时间先后依次作用在基础循环上
+   - { kind:'insert', date, accountId, mode, videoIdx?, name? }
+       mode:'shift'      该日插入一条发布，该日及之后整体顺延一天（v7 原语义）
+       mode:'standalone' 该日独立插入一条发布，后续已有排期顺序完全不变
+     videoIdx/name 为「指定发布的内容」；缺省表示按轮播自动取
+   - { kind:'change', date, accountId, scope, videoIdx?, name?, slotIdx? }
+       scope:'day'    只替换该日的发布内容，之后顺序不动
+       scope:'onward' 从该日起按新内容继续执行（自该日重排账号轮播，后续顺序随之变化）
+   - { kind:'swap', a, b }               交换 a、b 两天的发布安排 */
+function normalizeAdjustments(src) {
+  if (!Array.isArray(src)) return [];
+  const out = [];
+  src.forEach(o => {
+    if (!o || typeof o !== 'object') return;
+    if (o.kind === 'insert') {
+      const date = (typeof o.date === 'string' && DATE_RE.test(o.date)) ? o.date : null;
+      const accountId = (typeof o.accountId === 'string' && ACCOUNTS[o.accountId]) ? o.accountId : null;
+      if (!date || !accountId) return;
+      const op = { kind: 'insert', date, accountId, mode: (o.mode === 'standalone' ? 'standalone' : 'shift') };
+      const vi = normVideoIdx(o.videoIdx);
+      if (vi !== null) { op.videoIdx = vi; op.name = (typeof o.name === 'string') ? o.name : ''; }
+      out.push(op);
+    } else if (o.kind === 'change') {
+      const date = (typeof o.date === 'string' && DATE_RE.test(o.date)) ? o.date : null;
+      const accountId = (typeof o.accountId === 'string' && ACCOUNTS[o.accountId]) ? o.accountId : null;
+      if (!date || !accountId) return;
+      const op = { kind: 'change', date, accountId, scope: (o.scope === 'onward' ? 'onward' : 'day') };
+      const vi = normVideoIdx(o.videoIdx);
+      if (vi !== null) { op.videoIdx = vi; op.name = (typeof o.name === 'string') ? o.name : ''; }
+      const si = normVideoIdx(o.slotIdx);
+      if (si !== null && si < 3) op.slotIdx = si;
+      out.push(op);
+    } else if (o.kind === 'swap') {
+      const a = (typeof o.a === 'string' && DATE_RE.test(o.a)) ? o.a : null;
+      const b = (typeof o.b === 'string' && DATE_RE.test(o.b)) ? o.b : null;
+      if (a && b && a !== b) out.push({ kind: 'swap', a, b });
+    }
+  });
+  return out.slice(-300);
+}
+
+function defaultState() {
+  return {
+    startDate: todayStr(),
+    slots: [null, null, null],
+    contents: defaultContents(),
+    confirmed: false,
+    viewMonth: null,
+    pubCount: emptyCounts(),
+    rot: emptyCounts(),
+    published: [],
+    settledThrough: addDays(todayStr(), -1),
+    adjustments: [],
+    /* 扩展字段（设置 / 通知 / 盘点）：由 ensureExtras 统一规范化 */
+    settings: null,
+    notifications: [],
+    notifDismissed: [],
+    calibrations: []
+  };
+}
+
+/* 扩展字段原样带出：normalize 只做「搬运」，不做丢弃，
+   否则刷新页面后设置（预警阈值）/ 通知 / 盘点记录会全部丢失。
+   带出后由 ensureExtras 统一做严格校验与规范化。 */
+function pickExtras(d) {
+  const src = (d && typeof d === 'object') ? d : {};
+  return {
+    settings: (src.settings && typeof src.settings === 'object') ? src.settings : null,
+    notifications: Array.isArray(src.notifications) ? src.notifications : [],
+    notifDismissed: Array.isArray(src.notifDismissed) ? src.notifDismissed : [],
+    calibrations: Array.isArray(src.calibrations) ? src.calibrations : []
+  };
+}
+
+function normalize(d) {
+  const base = defaultState();
+  if (!d || typeof d !== 'object') return base;
+
+  const extras = pickExtras(d);
+  const slots = (Array.isArray(d.slots) && d.slots.length === 3)
+    ? d.slots.map(s => (typeof s === 'string' && ACCOUNTS[s]) ? s : null)
+    : [null, null, null];
+
+  const contents = normalizeContents(d.contents);
+  const confirmed = !!d.confirmed && slots.every(Boolean);
+  const viewMonth = (typeof d.viewMonth === 'string' && /^\d{4}-\d{2}$/.test(d.viewMonth))
+    ? d.viewMonth : null;
+
+  if (!confirmed) {
+    return { ...base, slots, contents, confirmed: false, viewMonth, ...extras };
+  }
+
+  const hasSettlement =
+    typeof d.settledThrough === 'string' && DATE_RE.test(d.settledThrough) &&
+    Array.isArray(d.published) &&
+    d.pubCount && typeof d.pubCount === 'object' &&
+    d.rot && typeof d.rot === 'object';
+
+  if (!hasSettlement) {
+    // 旧版存档（v5 及更早）：count 视为「剩余次数」，从今天起全自动扣减
+    const today = todayStr();
+    return {
+      startDate: today,
+      slots,
+      contents,
+      confirmed: true,
+      viewMonth,
+      pubCount: emptyCounts(),
+      rot: emptyCounts(),
+      published: [],
+      settledThrough: addDays(today, -1),
+      adjustments: [],
+      ...extras
+    };
+  }
+
+  const startDate = (typeof d.startDate === 'string' && DATE_RE.test(d.startDate))
+    ? d.startDate : todayStr();
+
+  const pubCount = emptyCounts();
+  const rot = emptyCounts();
+  IDS.forEach(id => {
+    const n = Number(d.pubCount[id]);
+    pubCount[id] = Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+    const r = Number(d.rot[id]);
+    rot[id] = Number.isFinite(r) && r > 0 ? Math.floor(r) : 0;
+  });
+
+  const published = (Array.isArray(d.published) ? d.published : [])
+    .filter(r => r && typeof r.date === 'string' && DATE_RE.test(r.date))
+    .map(r => ({
+      date: r.date,
+      accountId: (typeof r.accountId === 'string' && ACCOUNTS[r.accountId]) ? r.accountId : null,
+      videoIdx: Number.isFinite(Number(r.videoIdx)) ? Math.floor(Number(r.videoIdx)) : -1,
+      name: typeof r.name === 'string' ? r.name : '',
+      status: r.status === 'published' ? 'published' : 'depleted',
+      left: Number.isFinite(Number(r.left)) && Number(r.left) > 0 ? Math.floor(Number(r.left)) : 0,
+      manual: !!r.manual
+    }))
+    .sort((a, b) => (a.date < b.date ? -1 : (a.date > b.date ? 1 : 0)));
+
+  return {
+    startDate,
+    slots,
+    contents,
+    confirmed: true,
+    viewMonth,
+    pubCount,
+    rot,
+    published,
+    settledThrough: d.settledThrough,
+    adjustments: normalizeAdjustments(d.adjustments),
+    ...extras
+  };
+}
+
+function loadState() {
+  let raw = null;
+  try { raw = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { raw = null; }
+  if (raw) return normalize(raw);
+
+  // 旧版迁移：保留排期与内容，交由 normalize 统一迁移（起点重置为今天）
+  for (const k of LEGACY_KEYS) {
+    let old = null;
+    try { old = JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { old = null; }
+    if (old && typeof old === 'object') return normalize(old);
+  }
+  return defaultState();
+}
+
+let state = loadState();
+
+/* =========================================================
+   扩展字段（v9）：设置 / 通知中心 / 盘点校准记录
+   ========================================================= */
+const DEFAULT_WARN_THRESHOLD = 3;   // 视频预警阈值（剩余 ≤ N 条时提醒），预留可调整
+
+function normalizeSettings(src) {
+  const d = (src && typeof src === 'object') ? src : {};
+  const n = Number(d.warnThreshold);
+  const t = (d.theme === 'dark' || d.theme === 'light' || d.theme === 'auto') ? d.theme : 'auto';
+  return {
+    warnThreshold: Number.isFinite(n) && n >= 0 ? Math.floor(n) : DEFAULT_WARN_THRESHOLD,
+    theme: t
+  };
+}
+
+function normalizeNotif(src) {
+  if (!src || typeof src !== 'object') return null;
+  if (typeof src.key !== 'string' || !src.key) return null;
+  return {
+    key: src.key,
+    level: src.level === 'red' ? 'red' : 'yellow',
+    accountId: ACCOUNTS[src.accountId] ? src.accountId : null,
+    title: typeof src.title === 'string' ? src.title : '',
+    body: typeof src.body === 'string' ? src.body : '',
+    ts: Number.isFinite(Number(src.ts)) ? Number(src.ts) : Date.now(),
+    read: !!src.read
+  };
+}
+
+function ensureExtras(s) {
+  if (!s || typeof s !== 'object') return s;
+  s.settings = normalizeSettings(s.settings);
+  s.notifications = Array.isArray(s.notifications)
+    ? s.notifications.map(normalizeNotif).filter(Boolean).slice(-100)
+    : [];
+  s.notifDismissed = Array.isArray(s.notifDismissed)
+    ? s.notifDismissed.filter(k => typeof k === 'string').slice(-200)
+    : [];
+  s.calibrations = Array.isArray(s.calibrations)
+    ? s.calibrations.filter(c => c && typeof c === 'object').slice(-200)
+    : [];
+  return s;
+}
+
+state = ensureExtras(state);
+
+/* 预警阈值读取（唯一定义处，改这里或调用 setWarnThreshold 即可调整） */
+function warnThreshold() {
+  return normalizeSettings(state && state.settings).warnThreshold;
+}
+
+/* 预留接口：调整预警阈值（默认「剩余 3 条」开始提醒）。
+   后续设置弹窗接入时直接调用本函数即可，写入后立即重渲染并持久化。 */
+function setWarnThreshold(n) {
+  const v = Math.max(0, Math.floor(Number(n) || 0));
+  state.settings = normalizeSettings({ warnThreshold: v });
+  persist();
+  renderAll();
+  return v;
+}
+
+function persist() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* 忽略 */ }
+}
+
+/* =========================================================
+   核心：按日期自动结算 + 未来投影（v6）
+   =========================================================
+   语义：
+   - 每个视频的 count 表示「剩余可发布次数」，随日期推进自动扣减
+   - startDate 是周期基准点（排期当天），每 CYCLE_DAYS 天一个轮回
+   - 每到发布日（含今天），从当天账号「剩余次数 > 0」的视频中按顺序取一个发布并 -1
+   - 该账号全部视频剩余次数为 0（或未配置）时，当天显示「缺视频」
+   ========================================================= */
+
+/* 从轮播指针开始顺时针找第一个剩余次数 > 0 的视频下标，找不到返回 -1 */
+function pickVideo(list, counts, rotVal) {
+  const total = list.length;
+  if (!total) return -1;
+  const start = mod(rotVal || 0, total);
+  for (let k = 0; k < total; k++) {
+    const idx = mod(start + k, total);
+    if (sanitizeCount(counts[idx]) > 0) return idx;
+  }
+  return -1;
+}
+
+/* 取当天该账号要发的内容下标：
+   优先用指定内容，若指定内容可用则返回指定下标；
+   若指定内容 count=0 或无指定，走轮播取数：
+   全为空时停在原位（不绕行到别的索引），返回原位下标；
+   否则返回第一个剩余 > 0 的下标。
+   返回值始终 >= 0 或 -1（无列表） */
+function pickVideoOnDay(list, counts, rotVal, specIdx) {
+  const total = list.length;
+  if (!total) return -1;
+  /* 指定内容优先：可用则用，用尽则停在原地 */
+  if (specIdx >= 0) {
+    if (sanitizeCount(counts[specIdx]) > 0) return specIdx;
+    return specIdx;   // 指定内容 count=0，停在指定位不绕行
+  }
+  /* 轮播取数：从 rotVal 开始，不再扫描跳过耗尽项
+     内容耗尽时直接返回该位置索引，由 settle/buildSchedule 标记 depleted 并推进轮播 */
+  return mod(rotVal || 0, total);
+}
+
+/* =========================================================
+   临时调整：日期 → 发布事件 时间线（v7）
+   =========================================================
+   基础循环：从 startDate 起每 CYCLE_DAYS 天一轮，当天账号 = slots[mod(天数差, CYCLE_DAYS)]
+   调整操作（state.adjustments）按时间先后依次作用在这条时间线上：
+   - insert：在该日插入一条新发布，该日及之后的事件整体后移一天
+   - swap  ：交换两天的发布事件（账号与其轮到的视频一起换过去）
+   已结算的日期一律以 published 记录为准，调整只影响今天之后的排期。
+   ========================================================= */
+
+/* 「改此日并沿用」：返回不晚于 date 的最近一次重排锚点（无则 null）。
+   该调整会让从锚点日起的账号轮播按新内容继续执行（后续顺序随之变化）。 */
+function anchorOpAt(date) {
+  const ops = Array.isArray(state.adjustments) ? state.adjustments : [];
+  let hit = null;
+  for (let i = 0; i < ops.length; i++) {
+    const o = ops[i];
+    if (!o || o.kind !== 'change' || o.scope !== 'onward') continue;
+    if (o.date > date) continue;
+    if (!hit || o.date >= hit.date) hit = o;
+  }
+  return hit;
+}
+
+/* 基础循环：某天原本由哪个账号发布（早于 startDate 无发布，返回 null）
+   v10：若此前存在「改此日并沿用」，则自该日起按新账号继续轮播 */
+function baseAccountOn(date) {
+  const op = anchorOpAt(date);
+  const anchor = op ? op.date : state.startDate;
+  const diff = daysBetween(anchor, date);
+  if (diff < 0) return null;
+  let slotIdx = 0;
+  if (op) {
+    const idx = Number.isInteger(op.slotIdx) ? op.slotIdx : state.slots.indexOf(op.accountId);
+    slotIdx = (idx >= 0) ? idx : 0;
+  }
+  return state.slots[mod(diff + slotIdx, CYCLE_DAYS)] || null;
+}
+
+/* 一个发布日的事件结构（v10：增加内容指定 / 独立插入 / 改日重排） */
+function emptyEntry(accountId) {
+  return {
+    accountId: accountId || null,
+    inserted: false,      // 顺延插入占位日
+    swapped: false,       // 参与过互换
+    overridden: false,    // 该日内容被「修改」过
+    rebranch: false,      // 「改此日并沿用」的锚点日
+    videoIdx: null,       // 指定的内容下标（null = 自动轮播）
+    name: '',             // 指定内容的名称（冗余保存，内容被删也能展示）
+    byContent: false,     // 是否指定了具体内容
+    extra: []             // 「不影响后续」模式在该日附加的独立发布
+  };
+}
+
+/* 把操作里指定的内容写进事件（支持按下标指定，也支持按名称指定，后者用于「现场新增内容」） */
+function applySpecified(entry, op) {
+  if (!entry) return entry;
+  const nm = (typeof op.name === 'string') ? op.name.trim() : '';
+  if (Number.isInteger(op.videoIdx) && op.videoIdx >= 0) {
+    entry.videoIdx = op.videoIdx;
+    entry.name = (typeof op.name === 'string') ? op.name : '';
+    entry.byContent = true;
+  } else if (nm) {
+    entry.videoIdx = null;
+    entry.name = nm;
+    entry.byContent = true;
+  }
+  return entry;
+}
+
+/* 操作指定的内容 → 目标下标（优先按下标，其次按名称匹配；返回 -1 表示未指定/找不到） */
+function resolveOpVideo(list, videoIdx, name) {
+  if (!Array.isArray(list) || !list.length) return -1;
+  if (Number.isInteger(videoIdx) && videoIdx >= 0 && videoIdx < list.length) return videoIdx;
+  const nm = (typeof name === 'string') ? name.trim() : '';
+  if (!nm) return -1;
+  return list.findIndex(v => (((v.name || '').trim() || '未命名视频') === nm));
+}
+
+/* 该日事件中，指定账号需要发布的所有条目（基础发布在前，独立插入在后） */
+function entryPublishes(entry, accountId) {
+  const out = [];
+  if (!entry || !accountId) return out;
+  if (entry.accountId === accountId) {
+    out.push({ accountId, videoIdx: entry.videoIdx, name: entry.name || '', extra: false, base: true });
+  }
+  (entry.extra || []).forEach(x => {
+    if (x && x.accountId === accountId) {
+      out.push({ accountId, videoIdx: x.videoIdx, name: x.name || '', extra: true, base: false });
+    }
+  });
+  return out;
+}
+
+function baseTimeline(from, to) {
+  const map = {};
+  let cur = from;
+  let guard = 0;
+  while (daysBetween(cur, to) >= 0 && guard++ < 4000) {
+    map[cur] = emptyEntry(baseAccountOn(cur));
+    cur = addDays(cur, 1);
+  }
+  return map;
+}
+
+/* 该操作的功能日期（用于排序与计算窗口） */
+function opDateOf(o) {
+  if (!o) return '';
+  if (o.kind === 'insert' || o.kind === 'change') return o.date;
+  return (o.a < o.b) ? o.a : o.b;
+}
+
+/* 是否「顺延」模式插入（该日及之后整体后移一天） */
+function isShiftInsert(o) { return !!o && o.kind === 'insert' && o.mode !== 'standalone'; }
+
+/* 构建 [from, to] 的事件表：date -> { accountId, inserted, swapped, extra[], videoIdx, ... } */
+function buildTimeline(from, to) {
+  const all = Array.isArray(state.adjustments) ? state.adjustments : [];
+
+  // 操作日期晚于 to 的，不会改变 to 及之前的事件，直接忽略
+  const ops = all.filter(o => opDateOf(o) <= to);
+  if (!ops.length) return baseTimeline(from, to);
+
+  const insertTotal = all.filter(isShiftInsert).length;
+
+  // 窗口：覆盖查询区间 + 相关操作日期 + 插入造成的整体位移
+  let start = from;
+  let end = to;
+  ops.forEach(o => {
+    const dates = opDateOf(o) ? [opDateOf(o)] : [];
+    dates.forEach(d => {
+      if (daysBetween(d, start) > 0) start = d;   // d 早于 start
+      if (daysBetween(end, d) > 0) end = d;       // d 晚于 end
+    });
+  });
+  end = addDays(end, insertTotal + 2);
+
+  const entries = {};
+  const order = [];
+  let cur = start;
+  let guard = 0;
+  while (daysBetween(cur, end) >= 0 && guard++ < 6000) {
+    entries[cur] = emptyEntry(baseAccountOn(cur));
+    order.push(cur);
+    cur = addDays(cur, 1);
+  }
+
+  const sorted = ops
+    .map((o, i) => ({ o, i }))
+    .sort((x, y) => {
+      const dx = opDateOf(x.o), dy = opDateOf(y.o);
+      if (dx !== dy) return dx < dy ? -1 : 1;
+      return x.i - y.i;
+    });
+
+  sorted.forEach(({ o }) => {
+    if (o.kind === 'insert') {
+      if (isShiftInsert(o)) {
+        // 顺延模式：该日及之后整体后移一天（从后往前挪，避免覆盖），再在该日放入新插入的发布
+        for (let k = order.length - 1; k >= 0; k--) {
+          const d = order[k];
+          if (d === o.date) continue;
+          if (daysBetween(o.date, d) < 0) continue;   // d 早于 o.date
+          const prev = order[k - 1];
+          entries[d] = prev ? entries[prev] : emptyEntry(null);
+        }
+        const neo = applySpecified(emptyEntry(o.accountId), o);
+        neo.inserted = true;
+        entries[o.date] = neo;
+      } else {
+        // 不影响后续：只在该日多挂一条独立发布，后续已有排期顺序完全不变
+        if (!entries[o.date]) entries[o.date] = emptyEntry(baseAccountOn(o.date));
+        entries[o.date].extra.push({
+          accountId: o.accountId,
+          videoIdx: (Number.isInteger(o.videoIdx) && o.videoIdx >= 0) ? o.videoIdx : null,
+          name: (typeof o.name === 'string') ? o.name : '',
+          standalone: true
+        });
+      }
+    } else if (o.kind === 'change') {
+      const e = entries[o.date] || (entries[o.date] = emptyEntry(o.accountId));
+      applySpecified(e, o);
+      e.accountId = o.accountId;
+      e.overridden = true;
+      if (o.scope === 'onward') e.rebranch = true;
+    } else {
+      const ta = entries[o.a];
+      if (ta && entries[o.b]) {
+        entries[o.a] = entries[o.b];
+        entries[o.b] = ta;
+      }
+      if (entries[o.a]) entries[o.a].swapped = true;
+      if (entries[o.b]) entries[o.b].swapped = true;
+    }
+  });
+
+  const out = {};
+  order.forEach(d => { if (daysBetween(from, d) >= 0) out[d] = entries[d]; });
+  return out;
+}
+
+/* 某天当前实际的发布账号（已应用临时调整） */
+function accountOn(date) {
+  const e = buildTimeline(date, date)[date];
+  return e ? e.accountId : null;
+}
+
+/* 某天是否被临时调整过（用于日历角标与悬停提示） */
+function adjustmentInfoOn(date) {
+  if (!state.confirmed) return null;
+  const ops = Array.isArray(state.adjustments) ? state.adjustments : [];
+  if (!ops.length) return null;
+  const e = buildTimeline(date, date)[date];
+  if (!e) return null;
+  const hasExtra = !!(e.extra && e.extra.length);
+  if (!e.inserted && !e.swapped && !e.overridden && !hasExtra) return null;
+  let swapWith = null;
+  ops.forEach(o => {
+    if (o.kind === 'swap' && (o.a === date || o.b === date)) swapWith = (o.a === date ? o.b : o.a);
+  });
+  return {
+    inserted: !!e.inserted,
+    standalone: hasExtra,
+    overridden: !!e.overridden,
+    rebranch: !!e.rebranch,
+    swapped: !!e.swapped,
+    swapWith,
+    accountId: e.accountId,
+    extra: e.extra || [],
+    byContent: !!e.byContent,
+    name: e.name || ''
+  };
+}
+
+/* 在某组调整下预览发布安排（不改变真实状态） */
+function previewTimeline(ops, from, count) {
+  const backup = state.adjustments;
+  state.adjustments = ops;
+  const tl = buildTimeline(from, addDays(from, Math.max(0, count - 1)));
+  state.adjustments = backup;
+  return tl;
+}
+
+/* 在某组调整下预览「逐日发布的账号与内容名」（不改变真实状态）
+   listOverride：可选 {accountId: [ {name,count} ]}，用于预览「现场新增内容」的效果 */
+function previewRows(ops, from, count, listOverride) {
+  const backup = state.adjustments;
+  state.adjustments = ops;
+  const last = addDays(from, Math.max(0, count - 1));
+  const tl = buildTimeline(from, last);
+  state.adjustments = backup;
+
+  const listOf = id => (listOverride && listOverride[id]) ? listOverride[id] : (state.contents[id] || []);
+  const simCounts = {}, simRot = {};
+  IDS.forEach(id => {
+    const list = listOf(id);
+    simCounts[id] = list.map(v => sanitizeCount(v.count));
+    simRot[id] = list.length ? mod(state.rot[id] || 0, list.length) : 0;
+  });
+
+  const rows = [];
+  let cur = from;
+  let guard = 0;
+  while (daysBetween(cur, last) >= 0 && guard++ < 400) {
+    const ev = tl[cur];
+    const items = [];
+    IDS.forEach(id => {
+      entryPublishes(ev, id).forEach(p => {
+        const list = listOf(id);
+        let vi = -1;
+        const spec = resolveOpVideo(list, p.videoIdx, p.name);
+        if (spec >= 0) {
+          /* 与 settle() 一致：指定内容可用则用，用尽则停在原地不绕行 */
+          vi = spec;
+        } else {
+          /* 与 settle()/buildSchedule 一致：内容耗尽时停在原位、标记缺「内容名」，
+             不再跳过耗尽项顺延到下一条（否则预览会与日历排期不一致） */
+          vi = pickVideoOnDay(list, simCounts[id], simRot[id], -1);
+        }
+        let name = '', hasVideo = false;
+        if (vi >= 0) {
+          const before = sanitizeCount(simCounts[id][vi]);
+          if (before > 0) {
+            simCounts[id][vi] = before - 1;
+            hasVideo = true;
+          } else {
+            simCounts[id][vi] = 0;
+            hasVideo = false;
+          }
+          name = (list[vi].name || '').trim() || '未命名视频';
+          simRot[id] = mod(vi + 1, list.length);
+        }
+        items.push({ accountId: id, videoIdx: vi, name, hasVideo, base: !!p.base, extra: !!p.extra });
+      });
+    });
+    rows.push({ date: cur, items, entry: ev });
+    cur = addDays(cur, 1);
+  }
+  return rows;
+}
+
+/* =========================================================
+   缺视频具体化 / 剩余条数 / 盘点校准（v9）
+   ========================================================= */
+
+/* 缺视频时，指出「本该轮到」的那条视频名（内容名），用于把提示具体化 */
+function missingVideoName(accountId, rotVal) {
+  const list = (accountId && state.contents[accountId]) || [];
+  if (!list.length) return '';
+  const rv = (rotVal == null) ? (state.rot[accountId] || 0) : rotVal;
+  const idx = mod(rv, list.length);
+  return (list[idx].name || '').trim() || '未命名视频';
+}
+
+/* 账号「到今天为止」的剩余总条数（含今天投影发布的扣减，与日历投影口径一致） */
+function accountRemainingNow(accountId) {
+  const list = state.contents[accountId] || [];
+  if (!list.length) return 0;
+  const counts = list.map(v => sanitizeCount(v.count));
+  let rot = mod(state.rot[accountId] || 0, list.length);
+  const today = todayStr();
+  let cur = state.settledThrough ? addDays(state.settledThrough, 1) : state.startDate;
+  const tl = buildTimeline(cur, today);
+  let guard = 0;
+  while (daysBetween(cur, today) >= 0 && guard++ < 4000) {
+    const ev = tl[cur];
+    if (ev && ev.accountId === accountId) {
+      const vi = pickVideo(list, counts, rot);
+      if (vi >= 0) {
+        counts[vi] = Math.max(0, counts[vi] - 1);
+        rot = mod(vi + 1, list.length);
+      }
+    }
+    cur = addDays(cur, 1);
+  }
+  return counts.reduce((a, b) => a + b, 0);
+}
+
+/* 账号剩余明细（逐条内容），供盘点弹窗与通知文案使用 */
+function accountInventory(accountId) {
+  const list = state.contents[accountId] || [];
+  const counts = list.map(v => sanitizeCount(v.count));
+  let rot = list.length ? mod(state.rot[accountId] || 0, list.length) : 0;
+  const today = todayStr();
+  let cur = state.settledThrough ? addDays(state.settledThrough, 1) : state.startDate;
+  const tl = buildTimeline(cur, today);
+  let guard = 0;
+  while (daysBetween(cur, today) >= 0 && guard++ < 4000) {
+    const ev = tl[cur];
+    if (ev && ev.accountId === accountId) {
+      const vi = pickVideo(list, counts, rot);
+      if (vi >= 0) {
+        counts[vi] = Math.max(0, counts[vi] - 1);
+        rot = mod(vi + 1, list.length);
+      }
+    }
+    cur = addDays(cur, 1);
+  }
+  return list.map((v, i) => ({
+    videoIdx: i,
+    name: (v.name || '').trim() || '未命名视频',
+    system: counts[i],
+    raw: sanitizeCount(v.count)
+  }));
+}
+
+/* 该账号今天是否排了发布（校准写入时要按「今天是否已发」对齐基准） */
+function isPublishDayToday(accountId) {
+  const today = todayStr();
+  const tl = buildTimeline(today, today);
+  const ev = tl[today];
+  return !!(ev && ev.accountId === accountId);
+}
+
+/* 应用盘点校准：把人工盘点值写回各内容剩余次数，作为后续自动扣减的基准。
+   口径：人工值 = 「到今天为止（含今天已发布）」的剩余。
+   若今天该账号还有发布安排，则写回时 +1（今天这次尚未落账，明天结算时才扣），
+   从而保证校准后当天过后照常扣减、不多一条也不少一条。
+   同一天内重复校准是幂等的：先把当天已校准行还原为校准前的系统值，再重新写入。 */
+function applyCalibration(rows) {
+  const today = todayStr();
+  const last = state.calibrations.length ? state.calibrations[state.calibrations.length - 1] : null;
+  const restore = {};
+  if (last && last.date === today) {
+    last.rows.forEach(r => { restore[r.accountId + '#' + r.videoIdx] = r.sysBefore; });
+  }
+
+  // 先还原本日已校准行
+  Object.keys(restore).forEach(k => {
+    const [accId, idxStr] = k.split('#');
+    const list = state.contents[accId] || [];
+    const v = list[Number(idxStr)];
+    if (v) v.count = Math.max(0, restore[k]);
+  });
+
+  const snapshot = [];
+  rows.forEach(r => {
+    const list = state.contents[r.accountId] || [];
+    const v = list[r.videoIdx];
+    if (!v) return;
+    const k = r.accountId + '#' + r.videoIdx;
+    const sysBefore = (k in restore) ? restore[k] : sanitizeCount(v.count);
+    const manual = Math.max(0, Math.floor(Number(r.value) || 0));
+    /* 今天若尚未落账且该账号今天有发布安排，写入时 +1 备扣（明天结算时扣掉），
+       这样「校准值」与校准后每天的正常扣减闭合，不会多一条或少一条；
+       若今天已落账（settledThrough 已到今天就返回），则按盘点值直接写入。 */
+    const bump = (daysBetween(state.settledThrough, today) > 0 && isPublishDayToday(r.accountId)) ? 1 : 0;
+    v.count = manual + bump;
+    snapshot.push({
+      accountId: r.accountId,
+      videoIdx: r.videoIdx,
+      name: (v.name || '').trim() || '未命名视频',
+      sysBefore,
+      value: manual
+    });
+  });
+
+  state.calibrations.push({ date: today, ts: Date.now(), rows: snapshot });
+  if (state.calibrations.length > 60) state.calibrations = state.calibrations.slice(-60);
+}
+
+/* =========================================================
+   结算：把 settledThrough 之后到「昨天」的每个发布日依次落账并扣减（今天当天不扣）
+   ========================================================= */
+function settle() {
+  if (!state.confirmed) return;
+  const today = todayStr();
+
+  let begin = state.settledThrough ? addDays(state.settledThrough, 1) : state.startDate;
+  if (daysBetween(state.startDate, begin) < 0) begin = state.startDate;
+  if (daysBetween(begin, today) < 0) return;   // 暂无新的发布日
+
+  const timeline = buildTimeline(begin, today);   // 应用临时调整后的实际发布安排
+
+  /* 发布日 == 今日不扣减，只推进 settledThrough 到今天，待明天结算时才会落账扣减。
+     即已结算记录仅包含 < today 的日期，今天仅通过 buildSchedule 投影展示。 */
+  let cursor = begin;
+  let guard = 0;
+  while (daysBetween(cursor, today) > 0 && guard++ < 4000) {   // cursor 早于今天：仅对「发布日 < 今日」落账，当天不扣
+    const ev = timeline[cursor];
+    const recs = [];
+
+    // 该日发布：基础发布 + 「不影响后续」模式附加的独立发布（可能涉及多个账号）
+    IDS.forEach(id => {
+      const list = state.contents[id] || [];
+      entryPublishes(ev, id).forEach(p => {
+        const rec = {
+          date: cursor, accountId: id, videoIdx: -1, name: '', missingName: '',
+          status: 'depleted', left: 0
+        };
+        if (p.extra) rec.extra = true;
+
+        let vi = -1;
+        const spec = resolveOpVideo(list, p.videoIdx, p.name);
+        if (spec >= 0) {
+          /* 指定内容：可用则扣减，用尽则停在原地 */
+          vi = spec;
+        } else {
+          vi = pickVideoOnDay(list, list.map(v => sanitizeCount(v.count)), state.rot[id], -1);
+        }
+
+        if (vi >= 0) {
+          const curCount = sanitizeCount(list[vi].count);
+          if (curCount > 0) {
+            /* 还有剩余：正常扣减、推进 */
+            list[vi].count = curCount - 1;
+            state.pubCount[id] = (state.pubCount[id] || 0) + 1;
+            state.rot[id] = mod(vi + 1, list.length);
+            rec.status = 'published';
+            rec.videoIdx = vi;
+            rec.name = (list[vi].name || '').trim() || '未命名视频';
+            rec.left = list[vi].count;
+          } else {
+            /* 剩余已耗尽：标记缺『内容名』并提醒补拍，但仍推进轮播继续往下走 */
+            rec.status = 'depleted';
+            rec.missingName = (list[vi].name || '').trim() || '未命名视频';
+            rec.videoIdx = vi;
+            rec.left = 0;
+            rec.name = (list[vi].name || '').trim() || '未命名视频';
+            /* 仍然推进轮播，避免卡在同一条耗尽内容上 */
+            state.rot[id] = mod(vi + 1, list.length);
+          }
+        } else {
+          /* 无内容列表：保持缺失状态 */
+          rec.missingName = missingVideoName(id, state.rot[id]);
+        }
+
+        recs.push(rec);
+      });
+    });
+
+    // 该日没有任何发布安排：仍写入一条空记录（与既有行为一致，便于日期判断与撤销）
+    if (!recs.length) {
+      recs.push({ date: cursor, accountId: null, videoIdx: -1, name: '', missingName: '', status: 'depleted', left: 0 });
+    }
+
+    recs.forEach(r => state.published.push(r));
+    state.settledThrough = cursor;
+    cursor = addDays(cursor, 1);
+  }
+}
+
+/* 已结算记录 → 展示信息 */
+function fromRecord(r) {
+  if (!r.accountId) return null;
+  const published = r.status === 'published';
+  /* 只要当天确实发布了内容（status === 'published'）就算「有视频」。
+     剩余次数 0 只代表「本次用完」，不能反过来把这一次发布抹成「缺视频」，
+     否则某条视频的最后一次排期会从日历上消失（工厂生产视频只剩 1 次时的 bug）。 */
+  const hasVideo = published;
+  return {
+    accountId: r.accountId,
+    videoIdx: published ? r.videoIdx : -1,
+    name: hasVideo ? (r.name || '未命名视频') : '',
+    missingName: hasVideo ? '' : (r.missingName || missingVideoName(r.accountId)),
+    remaining: hasVideo ? sanitizeCount(r.left) : 0,
+    hasVideo,
+    settled: true,
+    manual: !!r.manual,
+    status: r.status
+  };
+}
+
+/* 生成 [fromDate, toDate] 区间的日历展示信息：历史用真实记录，未来做无副作用投影 */
+function buildSchedule(fromDate, toDate) {
+  const map = {};
+  if (!state.confirmed) return map;
+
+  const recsByDate = {};
+  state.published.forEach(r => {
+    if (r.date >= fromDate && r.date <= toDate) {
+      (recsByDate[r.date] = recsByDate[r.date] || []).push(r);
+    }
+  });
+  Object.keys(recsByDate).forEach(d => {
+    const recs = recsByDate[d];
+    const baseRec = recs.find(r => !r.extra && r.accountId);
+    const extras = recs.filter(r => r.extra && r.accountId).map(r => {
+      const info = fromRecord(r);
+      info.extra = true;
+      return info;
+    });
+    const baseInfo = baseRec ? fromRecord(baseRec) : null;
+    // 同一天可能有多条记录：「不影响后续」模式插入的独立发布单独成组展示
+    if (baseInfo) {
+      baseInfo.extraItems = extras;
+      map[d] = baseInfo;
+    } else if (extras.length) {
+      map[d] = {
+        accountId: null, videoIdx: -1, name: '', hasVideo: false, remaining: 0,
+        settled: true, status: 'depleted', extraOnly: true, extraItems: extras
+      };
+    }
+  });
+
+  const simCounts = {};
+  const simRot = {};
+  IDS.forEach(id => {
+    const list = state.contents[id] || [];
+    simCounts[id] = list.map(v => sanitizeCount(v.count));
+    simRot[id] = list.length ? mod(state.rot[id] || 0, list.length) : 0;
+  });
+
+  let cursor = addDays(state.settledThrough, 1);
+  const timeline = buildTimeline(cursor, toDate);   // 应用临时调整后的实际发布安排
+  let guard = 0;
+  while (daysBetween(cursor, toDate) >= 0 && guard++ < 4000) {
+    const ev = timeline[cursor];
+    const items = [];
+
+    // 该日发布：基础发布 + 「不影响后续」模式附加的独立发布（可能涉及多个账号）
+    IDS.forEach(id => {
+      const list = state.contents[id] || [];
+      entryPublishes(ev, id).forEach(p => {
+        let vi = -1;
+        const spec = resolveOpVideo(list, p.videoIdx, p.name);
+        if (spec >= 0) {
+          /* 指定内容：可用则用，用尽则停在原地（不绕行） */
+          vi = spec;
+        } else {
+          vi = pickVideoOnDay(list, simCounts[id], simRot[id], -1);
+        }
+        let info;
+        if (vi >= 0) {
+          const before = sanitizeCount(simCounts[id][vi]);
+          if (before > 0) {
+            /* 本日正常发布：扣减一次。扣减后为 0 表示「本次用完」，
+               仍算有视频，必须照常显示该视频名（否则最后一次排期会凭空消失） */
+            simCounts[id][vi] = before - 1;
+            simRot[id] = mod(vi + 1, list.length);
+            info = {
+              accountId: id,
+              videoIdx: vi,
+              name: (list[vi].name || '').trim() || '未命名视频',
+              missingName: '',
+              remaining: simCounts[id][vi],
+              hasVideo: true,
+              settled: false,
+              status: simCounts[id][vi] > 0 ? 'published' : 'used-up',
+              extra: !!p.extra
+            };
+          } else {
+            /* 该位内容已用尽：本日无内容可发，停在原位并标记缺「内容名」，
+               轮播推进规则与 settle() 保持一致（不卡在同一条耗尽内容上） */
+            simCounts[id][vi] = 0;
+            simRot[id] = mod(vi + 1, list.length);
+            info = {
+              accountId: id,
+              videoIdx: vi,
+              name: '',
+              missingName: (list[vi].name || '').trim() || '未命名视频',
+              remaining: 0,
+              hasVideo: false,
+              settled: false,
+              status: 'depleted',
+              extra: !!p.extra
+            };
+          }
+        } else {
+          info = {
+            accountId: id, videoIdx: -1, name: '', missingName: missingVideoName(id, simRot[id]),
+            remaining: 0, hasVideo: false, settled: false, status: 'depleted', extra: !!p.extra
+          };
+        }
+        items.push(info);
+      });
+    });
+
+    if (cursor >= fromDate && items.length) {
+      const baseInfo = items.find(x => !x.extra) || null;
+      const extras = items.filter(x => x.extra);
+      if (baseInfo) {
+        baseInfo.extraItems = extras;
+        map[cursor] = baseInfo;
+      } else {
+        // 该日只有「不影响后续」的独立插入，没有常规基础发布
+        map[cursor] = {
+          accountId: null, videoIdx: -1, name: '', hasVideo: false, remaining: 0,
+          settled: false, status: 'depleted', extraOnly: true, extraItems: extras
+        };
+      }
+    }
+
+    cursor = addDays(cursor, 1);
+  }
+
+  return map;
+}
+
+// （展示所需信息统一由 buildSchedule 汇总，无需额外的历史独立插入查询函数）
+
+/* =========================================================
+   渲染：日历
+   ========================================================= */
+function viewYM() {
+  if (state.viewMonth) {
+    const [y, m] = state.viewMonth.split('-').map(Number);
+    return { y, m: m - 1 };
+  }
+  const d = new Date();
+  return { y: d.getFullYear(), m: d.getMonth() };
+}
+
+function renderCalendar() {
+  const { y, m } = viewYM();
+  document.getElementById('monthLabel').textContent = `${y}年${m + 1}月`;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  const firstDay = new Date(y, m, 1);
+  const offset = (firstDay.getDay() + 6) % 7;   // 周一为第一列
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const cells = Math.ceil((offset + daysInMonth) / 7) * 7;
+  const todayS = todayStr();
+
+  const fromDate = fmt(new Date(y, m, 1 - offset));
+  const toDate = fmt(new Date(y, m, cells - offset));
+  const sched = buildSchedule(fromDate, toDate);
+  const adjTL = state.confirmed ? buildTimeline(fromDate, toDate) : {};
+  const partners = swapPartnerMap();
+
+  for (let i = 0; i < cells; i++) {
+    const dayNum = i - offset + 1;
+    const d = new Date(y, m, dayNum);
+    const dateStr = fmt(d);
+    const inMonth = d.getMonth() === m;
+    const info = sched[dateStr] || null;
+
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (inMonth ? '' : ' out') + (dateStr === todayS ? ' today' : '');
+    cell.dataset.date = dateStr;
+
+    // 右键：临时调整发布策略
+    cell.addEventListener('contextmenu', ev => {
+      ev.preventDefault();
+      openCtxMenu(ev.clientX, ev.clientY, dateStr);
+    });
+
+    // 临时调整角标（可能同时存在多个：插入 / 独立 / 改日 / 沿用 / 互换）
+    const adj = adjTL[dateStr];
+    if (adj) {
+      const badges = [];
+      if (adj.inserted) badges.push(['插入', '该日为插入的发布，该日及之后整体顺延一天']);
+      if (adj.standalone) badges.push(['独立', '该日额外插入一条独立发布，后续已有排期顺序完全不变']);
+      if (adj.overridden) badges.push(['改日', '该日发布内容已被修改（只改此日）']);
+      if (adj.rebranch) badges.push(['沿用', '该日发布已被修改，并自该日起按新内容继续沿用']);
+      if (adj.swapped) badges.push(['互换', partners[dateStr] ? `与 ${formatCN(partners[dateStr])} 互换发布` : '该日与其他日期互换发布']);
+      if (badges.length) {
+        const wrap = document.createElement('div');
+        wrap.className = 'adj-badges';
+        badges.forEach(pair => {
+          const badge = document.createElement('div');
+          badge.className = 'adj-badge';
+          badge.textContent = pair[0];
+          badge.title = pair[1];
+          wrap.appendChild(badge);
+        });
+        cell.appendChild(wrap);
+      }
+    }
+
+    const dnum = document.createElement('div');
+    dnum.className = 'dnum';
+    const dnumNum = document.createElement('span');
+    dnumNum.className = 'dnum-num';
+    dnumNum.textContent = d.getDate();
+    dnum.appendChild(dnumNum);
+    if (dateStr === todayS) {
+      const todayTag = document.createElement('span');
+      todayTag.className = 'today-tag';
+      todayTag.textContent = '今天';
+      dnum.appendChild(todayTag);
+    }
+    cell.appendChild(dnum);
+
+    // 该日的发布条目：常规发布 + 「不影响后续」模式插入的独立发布
+    const items = info
+      ? (info.extraOnly ? (info.extraItems || []).slice() : [info].concat(info.extraItems || []))
+      : [];
+
+    if (items.length === 1) {
+      const it = items[0];
+      const acc = ACCOUNTS[it.accountId];
+      const noVideo = !it.hasVideo;
+
+      if (noVideo) {
+        // 缺视频：不设行内 background / borderColor，完全交由 .cell.no-video（含 keyframes 动画）控制
+        cell.classList.add('no-video');
+      } else {
+        cell.style.background = acc.bg;
+        cell.style.borderColor = acc.border;
+      }
+
+      // 账号标签
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.style.background = acc.solid;
+      tag.textContent = acc.name;
+      cell.appendChild(tag);
+
+      // 缺视频时给出具体内容名
+      const missName = noVideo ? (it.missingName || missingVideoName(it.accountId)) : '';
+
+      // 视频名
+      const vname = document.createElement('div');
+      vname.className = 'video-name' + (noVideo ? ' empty' : '');
+      vname.textContent = noVideo ? (missName ? `缺「${missName}」` : '本期缺视频') : it.name;
+      cell.appendChild(vname);
+
+      // 预警（该内容剩余条数 ≤ 阈值）：黄色描边 + 黄色感叹号（样式由 .cell.warn 控制）
+      if (it.hasVideo && dateStr >= todayS && it.remaining <= warnThreshold()) {
+        cell.classList.add('warn');
+        cell.title = it.remaining > 0
+          ? `仅剩 ${it.remaining} 条，已达预警阈值（${warnThreshold()} 条）`
+          : '本次发布后该内容用完，下次轮到时将提示缺视频，请及时补拍';
+      }
+
+      // 状态标签
+      let label, missing;
+      if (!it.hasVideo) {
+        label = '缺视频'; missing = true;
+      } else if (it.remaining > 0) {
+        label = `剩余 ${it.remaining} 次`; missing = false;
+      } else {
+        label = '本次用完'; missing = true;
+      }
+
+      const cnt = document.createElement('div');
+      cnt.className = 'count-label' + (missing ? ' missing' : '');
+      cnt.textContent = label;
+      cell.appendChild(cnt);
+
+      // 悬停提示
+      cell.addEventListener('mouseenter', () => {
+        tipEl.innerHTML = tipHTML(dateStr, it);
+        tipEl.classList.add('show');
+      });
+      cell.addEventListener('mousemove', ev => positionTip(ev.clientX, ev.clientY));
+      cell.addEventListener('mouseleave', () => tipEl.classList.remove('show'));
+    } else if (items.length > 1) {
+      // 同一天多条发布：逐条列出「账号 + 内容」，避免任何一条被覆盖后看不出来
+      const anyNoVideo = items.some(x => !x.hasVideo);
+      const main = items.find(x => !x.extra) || items[0];
+      const mainAcc = ACCOUNTS[main.accountId];
+      if (mainAcc) {
+        if (anyNoVideo) {
+          cell.classList.add('no-video');
+        } else {
+          cell.style.background = mainAcc.bg;
+          cell.style.borderColor = mainAcc.border;
+        }
+      }
+
+      const box = document.createElement('div');
+      box.className = 'multi-pub';
+      items.forEach(it => {
+        const acc = ACCOUNTS[it.accountId];
+        if (!acc) return;
+        const row = document.createElement('div');
+        row.className = 'mi';
+
+        const chip = document.createElement('span');
+        chip.className = 'mi-acc';
+        chip.style.background = acc.solid;
+        chip.textContent = acc.name;
+        row.appendChild(chip);
+
+        if (it.extra) {
+          const flag = document.createElement('span');
+          flag.className = 'mi-flag';
+          flag.textContent = '独立';
+          flag.title = '「不影响后续」模式插入的独立发布';
+          row.appendChild(flag);
+        }
+
+        const nm = document.createElement('span');
+        if (it.hasVideo) {
+          nm.className = 'mi-name';
+          nm.textContent = it.name;
+        } else {
+          const mn = it.missingName || missingVideoName(it.accountId);
+          nm.className = 'mi-name empty';
+          nm.textContent = mn ? `缺「${mn}」` : '缺视频';
+        }
+        row.appendChild(nm);
+
+        if (it.hasVideo && dateStr >= todayS && it.remaining <= warnThreshold()) {
+          cell.classList.add('warn');
+        }
+        box.appendChild(row);
+      });
+      cell.appendChild(box);
+
+      const cnt = document.createElement('div');
+      cnt.className = 'count-label' + (anyNoVideo ? ' missing' : '');
+      cnt.textContent = `共 ${items.length} 条发布` + (anyNoVideo ? ' · 有缺口' : '');
+      cell.appendChild(cnt);
+
+      // 悬停提示（逐条列出）
+      cell.addEventListener('mouseenter', () => {
+        tipEl.innerHTML = tipHTMLMulti(dateStr, items);
+        tipEl.classList.add('show');
+      });
+      cell.addEventListener('mousemove', ev => positionTip(ev.clientX, ev.clientY));
+      cell.addEventListener('mouseleave', () => tipEl.classList.remove('show'));
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+/* =========================================================
+   悬停提示内容
+   ========================================================= */
+function tipHTML(dateStr, info) {
+  const acc = ACCOUNTS[info.accountId];
+
+  let html = `
+    <div class="tip-head">
+      <span class="tip-acc" style="background:${acc.bg};color:${acc.color};border-color:${acc.border}">
+        ${escapeHTML(acc.name)}
+      </span>
+      <span class="tip-date">${formatCN(dateStr)}</span>
+    </div>
+  `;
+
+  // 临时调整标记
+  const adj = adjustmentInfoOn(dateStr);
+  if (adj) {
+    const parts = [];
+    if (adj.inserted) parts.push('该日为新插入的发布，后续整体顺延一天');
+    if (adj.standalone) parts.push('该日额外插入了一条独立发布（后续顺序不变）');
+    if (adj.rebranch) parts.push('该日发布内容已修改，并自该日起按新内容沿用');
+    else if (adj.overridden) parts.push('该日发布内容已修改（只改此日）');
+    if (adj.swapped) parts.push(adj.swapWith ? `与 ${formatCN(adj.swapWith)} 互换` : '参与互换');
+    if (parts.length) html += `<div class="tip-order">临时调整：${parts.join('；')}</div>`;
+  }
+
+  if (!info.hasVideo) {
+    const missName = info.missingName || missingVideoName(info.accountId);
+    html += `<div class="tip-video empty">${missName ? `缺「${escapeHTML(missName)}」` : '本期无可发布视频'}</div>`;
+    html += `<div class="tip-warn">该账号内容已用完或未配置，本期缺视频${missName ? `：${escapeHTML(missName)} 已无剩余次数` : ''}</div>`;
+    return html;
+  }
+
+  const total = (state.contents[info.accountId] || []).length;
+  if (total > 1) {
+    html += `<div class="tip-order">第 ${info.videoIdx + 1} 个 / 共 ${total} 个视频</div>`;
+  }
+
+  html += `<div class="tip-video">${escapeHTML(info.name)}</div>`;
+  html += `<div class="tip-row"><span class="k">${info.settled ? '本次发布后剩余' : '预计发布后剩余'}</span><span class="v${info.remaining > 0 ? '' : ' missing'}">${info.remaining} 次</span></div>`;
+  html += `<div class="tip-row"><span class="k">状态</span><span class="v">${info.settled ? (info.manual ? '已发布（手动扣减）' : '已自动扣减') : '待发布（投影）'}</span></div>`;
+
+  if (info.remaining === 0) {
+    html += `<div class="tip-warn">该内容本次用完，下次轮到时将提示缺视频</div>`;
+  } else if (info.remaining <= warnThreshold()) {
+    html += `<div class="tip-warn yellow">该内容仅剩 ${info.remaining} 条，已达预警阈值（${warnThreshold()} 条）</div>`;
+  }
+
+  return html;
+}
+
+/* 同一天多条发布时的悬停提示：逐条列出账号与内容 */
+function tipHTMLMulti(dateStr, items) {
+  let html = `
+    <div class="tip-head">
+      <span class="tip-acc" style="background:var(--bg-soft);color:var(--text-secondary);border-color:var(--border)">
+        当日 ${items.length} 条发布
+      </span>
+      <span class="tip-date">${formatCN(dateStr)}</span>
+    </div>
+  `;
+
+  const adj = adjustmentInfoOn(dateStr);
+  if (adj) {
+    const parts = [];
+    if (adj.inserted) parts.push('该日为新插入的发布，后续整体顺延一天');
+    if (adj.standalone) parts.push('含「不影响后续」模式插入的独立发布（后续顺序不变）');
+    if (adj.rebranch) parts.push('该日发布内容已修改，并自该日起按新内容沿用');
+    else if (adj.overridden) parts.push('该日发布内容已修改（只改此日）');
+    if (adj.swapped) parts.push(adj.swapWith ? `与 ${formatCN(adj.swapWith)} 互换` : '参与互换');
+    if (parts.length) html += `<div class="tip-order">临时调整：${parts.join('；')}</div>`;
+  }
+
+  items.forEach(it => {
+    const acc = ACCOUNTS[it.accountId];
+    if (!acc) return;
+    html += `
+      <div class="tip-row">
+        <span class="k">
+          <span class="tip-acc mini" style="background:${acc.bg};color:${acc.color};border-color:${acc.border}">${escapeHTML(acc.name)}</span>
+          ${it.extra ? '<span class="tip-flag">独立插入</span>' : ''}
+        </span>
+        <span class="v">${it.hasVideo ? escapeHTML(it.name) : '缺视频'}</span>
+      </div>
+    `;
+    if (!it.hasVideo) {
+      const mn = it.missingName || missingVideoName(it.accountId);
+      html += `<div class="tip-warn">${mn ? `缺「${escapeHTML(mn)}」` : '本期无可发布视频'}</div>`;
+    } else {
+      html += `<div class="tip-order">${it.settled ? '本次发布后剩余' : '预计发布后剩余'} ${it.remaining} 次${it.remaining === 0 ? '（本次用完）' : (it.remaining <= warnThreshold() ? `（仅剩 ${it.remaining} 条，已达预警阈值）` : '')}</div>`;
+    }
+  });
+
+  return html;
+}
+
+/* =========================================================
+   提示定位
+   ========================================================= */
+const tipEl = document.getElementById('tip');
+
+function positionTip(x, y) {
+  const pad = 14;
+  const rect = tipEl.getBoundingClientRect();
+  let left = x + 16;
+  let top = y + 18;
+
+  if (left + rect.width > window.innerWidth - pad) left = x - rect.width - 16;
+  if (top + rect.height > window.innerHeight - pad) top = y - rect.height - 18;
+  if (left < pad) left = pad;
+  if (top < pad) top = pad;
+
+  tipEl.style.left = left + 'px';
+  tipEl.style.top = top + 'px';
+}
+
+/* =========================================================
+   弹窗草稿
+   ========================================================= */
+let draft = null;
+const overlay = document.getElementById('modalOverlay');
+
+function openModal() {
+  /* 草稿必须是「每个账号都有一份独立视频列表」的完整结构，
+     否则 renderModalContents 会退化成临时数组，导致已填内容/新增条目在重渲染时全部丢失 */
+  const contents = JSON.parse(JSON.stringify(state.contents || {}));
+  IDS.forEach(id => {
+    if (!Array.isArray(contents[id])) contents[id] = defaultVideos();
+  });
+  draft = {
+    slots: state.slots.slice(),
+    contents,
+    activeAccount: state.slots.find(Boolean) || IDS[0],
+    fresh: false
+  };
+  renderModal();
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  draft = null;
+}
+
+/* =========================================================
+   弹窗渲染
+   ========================================================= */
+function renderModal() {
+  if (!draft) return;
+  renderModalSlots();
+  renderModalCards();
+  renderModalContents();
+  renderModalStatus();
+}
+
+function renderModalStatus() {
+  const el = document.getElementById('modalStatus');
+  const filled = draft.slots.filter(Boolean).length;
+  el.textContent = `已排 ${filled}/3 天`;
+}
+
+/* ---- 三天槽位 ---- */
+function renderModalSlots() {
+  const today = todayStr();
+  const slotsEl = document.getElementById('daySlots');
+  slotsEl.innerHTML = '';
+
+  for (let i = 0; i < 3; i++) {
+    const dateStr = addDays(today, i);
+    const accId = draft.slots[i];
+    const acc = accId ? ACCOUNTS[accId] : null;
+
+    const el = document.createElement('div');
+    el.className = 'slot' + (acc ? ' filled' : '');
+    if (acc) {
+      el.style.background = acc.bg;
+      el.style.borderColor = acc.border;
+    }
+
+    const dateLine = document.createElement('div');
+    dateLine.className = 'slot-date';
+    dateLine.textContent = `${DAY_LABELS[i]} · ${formatCN(dateStr)}`;
+    el.appendChild(dateLine);
+
+    if (acc) {
+      el.draggable = true;
+
+      const chip = document.createElement('div');
+      chip.className = 'slot-chip';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = acc.name;
+      nameSpan.style.color = acc.color;
+
+      const rm = document.createElement('button');
+      rm.className = 'rm';
+      rm.type = 'button';
+      rm.textContent = '×';
+      rm.title = '移除';
+      rm.addEventListener('click', ev => {
+        ev.stopPropagation();
+        draft.slots[i] = null;
+        renderModal();
+      });
+
+      chip.append(nameSpan, rm);
+      el.appendChild(chip);
+
+      el.addEventListener('dragstart', ev => {
+        ev.dataTransfer.setData('text/plain', accId);
+        ev.dataTransfer.effectAllowed = 'move';
+        el.classList.add('dragging');
+      });
+      el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    } else {
+      const ph = document.createElement('div');
+      ph.className = 'slot-empty';
+      ph.textContent = '拖到此处';
+      el.appendChild(ph);
+    }
+
+    el.addEventListener('dragover', ev => {
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = 'move';
+      el.classList.add('over');
+    });
+    el.addEventListener('dragleave', () => el.classList.remove('over'));
+    el.addEventListener('drop', ev => {
+      ev.preventDefault();
+      el.classList.remove('over');
+      const id = ev.dataTransfer.getData('text/plain');
+      if (id && ACCOUNTS[id]) placeAccount(i, id);
+    });
+
+    slotsEl.appendChild(el);
+  }
+}
+
+/* ---- 账号卡片池 ---- */
+function renderModalCards() {
+  const pool = document.getElementById('cardPool');
+  pool.innerHTML = '';
+
+  IDS.forEach(id => {
+    const acc = ACCOUNTS[id];
+    const placed = draft.slots.includes(id);
+
+    const el = document.createElement('div');
+    el.className = 'card' + (placed ? ' placed' : '');
+    el.style.background = acc.bg;
+    el.style.borderColor = acc.border;
+    el.style.color = acc.color;
+    el.draggable = true;
+
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = acc.color;
+    el.appendChild(dot);
+
+    el.appendChild(document.createTextNode(acc.name));
+
+    if (placed) {
+      const mark = document.createElement('span');
+      mark.className = 'mark';
+      mark.textContent = '已排';
+      el.appendChild(mark);
+    }
+
+    el.addEventListener('dragstart', ev => {
+      ev.dataTransfer.setData('text/plain', id);
+      ev.dataTransfer.effectAllowed = 'move';
+    });
+
+    el.addEventListener('click', () => {
+      if (draft.slots.includes(id)) return;
+      const empty = draft.slots.indexOf(null);
+      if (empty === -1) { toast('三天已排满，请先移除一个账号'); return; }
+      placeAccount(empty, id);
+    });
+
+    pool.appendChild(el);
+  });
+}
+
+function placeAccount(slotIndex, accountId) {
+  const from = draft.slots.indexOf(accountId);
+  if (from === slotIndex) return;
+
+  if (from >= 0) {
+    const tmp = draft.slots[slotIndex];
+    draft.slots[slotIndex] = accountId;
+    draft.slots[from] = tmp;
+  } else {
+    draft.slots[slotIndex] = accountId;
+  }
+  renderModal();
+}
+
+/* =========================================================
+   视频编辑器（按账号分标签页）
+   ========================================================= */
+function renderModalContents() {
+  const el = document.getElementById('contentEditor');
+  el.innerHTML = '';
+  if (!draft) return;
+
+  const activeId = draft.activeAccount || IDS[0];
+
+  /* ---- 标签页 ---- */
+  const tabs = document.createElement('div');
+  tabs.className = 'account-tabs';
+
+  IDS.forEach(id => {
+    const acc = ACCOUNTS[id];
+    const isActive = id === activeId;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'account-tab' + (isActive ? ' active' : '');
+    if (isActive) {
+      btn.style.color = acc.color;
+      btn.style.background = acc.bg;
+    }
+
+    const dot = document.createElement('span');
+    dot.className = 'tab-dot';
+    dot.style.background = acc.color;
+
+    const label = document.createElement('span');
+    label.textContent = acc.name;
+
+    btn.append(dot, label);
+    btn.addEventListener('click', () => {
+      draft.activeAccount = id;
+      renderModalContents();
+    });
+
+    tabs.appendChild(btn);
+  });
+  el.appendChild(tabs);
+
+  /* ---- 视频列表 ---- */
+  /* 必须把列表回写到草稿（draft.contents），保证「输入 / 添加 / 删除」都作用在同一份数据上；
+     否则会退化成一次性的临时数组，重渲染即丢失（现象：点「+ 添加视频」后原有内容全部消失） */
+  if (!draft.contents || typeof draft.contents !== 'object') draft.contents = {};
+  if (!Array.isArray(draft.contents[activeId])) draft.contents[activeId] = defaultVideos();
+  const videos = draft.contents[activeId];
+
+  const hint = document.createElement('div');
+  hint.className = 'video-hint';
+  hint.innerHTML = '这些视频会在每次该账号发布时按顺序轮流使用：每次取下一个「剩余次数 &gt; 0」的视频发布，发布后该视频数量自动 -1。<br><b>「数量」代表剩余可发布次数</b>，例如填 1 就只会发 1 次，之后再轮到时将显示红色闪烁（缺视频）。';
+  el.appendChild(hint);
+
+  const list = document.createElement('div');
+  list.className = 'video-list';
+
+  videos.forEach((video, i) => {
+    const row = document.createElement('div');
+    row.className = 'video-item';
+
+    const nameIpt = document.createElement('input');
+    nameIpt.type = 'text';
+    nameIpt.placeholder = `视频 ${i + 1} 名称，如：产品开箱视频`;
+    nameIpt.value = video.name;
+    nameIpt.maxLength = 60;
+    nameIpt.addEventListener('input', () => { video.name = nameIpt.value; });
+
+    const countIpt = document.createElement('input');
+    countIpt.type = 'number';
+    countIpt.min = 0;
+    countIpt.max = 999;
+    countIpt.value = video.count;
+    countIpt.title = '剩余可发布次数（0 表示已用完）';
+    const syncCountClass = () => countIpt.classList.toggle('count-zero', sanitizeCount(countIpt.value) === 0);
+    syncCountClass();
+    countIpt.addEventListener('input', () => {
+      const v = parseInt(countIpt.value, 10);
+      if (Number.isFinite(v) && v >= 0) video.count = Math.min(999, v);
+      syncCountClass();
+    });
+    countIpt.addEventListener('blur', () => {
+      video.count = sanitizeCount(countIpt.value);
+      countIpt.value = video.count;
+      syncCountClass();
+      renderModalContents();
+    });
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'item-del';
+    del.textContent = '×';
+    del.title = '删除该视频';
+    del.addEventListener('click', () => {
+      videos.splice(i, 1);
+      if (!videos.length) videos.push({ name: '', count: 1 });
+      renderModalContents();
+    });
+
+    row.append(nameIpt, countIpt, del);
+    list.appendChild(row);
+  });
+
+  el.appendChild(list);
+
+  /* ---- 添加按钮 ---- */
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'add-item';
+  addBtn.textContent = '+ 添加视频';
+  addBtn.addEventListener('click', () => {
+    videos.push({ name: '', count: 1 });
+    renderModalContents();
+    setTimeout(() => {
+      const items = list.querySelectorAll('.video-item');
+      const last = items[items.length - 1];
+      if (last) last.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }, 0);
+  });
+  el.appendChild(addBtn);
+
+  /* ---- 警告：数量为 0 的视频 ---- */
+  const zeroVideos = videos.filter(v =>
+    ((v.name || '').trim() !== '') && sanitizeCount(v.count) === 0
+  );
+  if (zeroVideos.length) {
+    const warn = document.createElement('div');
+    warn.className = 'video-warn';
+    const names = zeroVideos.map(v => (v.name || '').trim() || '未命名视频').join('、');
+    warn.textContent = `⚠ 以下视频剩余次数为 0，轮到它们时会显示红色闪烁：${names}`;
+    el.appendChild(warn);
+  }
+}
+
+/* =========================================================
+   主页面：图例 / 状态栏
+   ========================================================= */
+function renderLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = '';
+
+  IDS.forEach(id => {
+    const acc = ACCOUNTS[id];
+    const item = document.createElement('div');
+    item.className = 'item';
+
+    const sw = document.createElement('span');
+    sw.className = 'swatch';
+    sw.style.background = acc.bg;
+    sw.style.borderColor = acc.border;
+
+    const t = document.createElement('span');
+    t.textContent = acc.name;
+
+    item.append(sw, t);
+    el.appendChild(item);
+  });
+
+  const warnItem = document.createElement('div');
+  warnItem.className = 'item';
+  const warnSw = document.createElement('span');
+  warnSw.className = 'warn-swatch';
+  const warnT = document.createElement('span');
+  warnT.textContent = '缺视频 / 已用完';
+  warnItem.append(warnSw, warnT);
+  el.appendChild(warnItem);
+
+  const lowItem = document.createElement('div');
+  lowItem.className = 'item';
+  const lowSw = document.createElement('span');
+  lowSw.className = 'warn-swatch yellow';
+  const lowT = document.createElement('span');
+  lowT.textContent = `预警：剩余 ≤ ${warnThreshold()} 条`;
+  lowItem.append(lowSw, lowT);
+  el.appendChild(lowItem);
+
+  /* 今天：醒目标注（日期旁边带「今天」标签） */
+  const todayItem = document.createElement('div');
+  todayItem.className = 'item';
+  const todaySw = document.createElement('span');
+  todaySw.className = 'today-swatch';
+  todaySw.textContent = '今';
+  const todayT = document.createElement('span');
+  todayT.textContent = '今天（当日）';
+  todayItem.append(todaySw, todayT);
+  el.appendChild(todayItem);
+}
+
+function renderStatusBar() {
+  const el = document.getElementById('sideStatus');
+  if (!el) return;
+  el.innerHTML = '';
+
+  if (!state.confirmed) {
+    const empty = document.createElement('div');
+    empty.className = 'ov-empty';
+    empty.textContent = '尚未排期，点击上方「设置发布计划」开始。';
+    el.appendChild(empty);
+    return;
+  }
+
+  const addRow = (leftNode, rightText) => {
+    const r = document.createElement('div');
+    r.className = 'ov-row';
+    const v = document.createElement('span');
+    v.textContent = rightText;
+    r.append(leftNode, v);
+    el.appendChild(r);
+  };
+  const accNode = (id, showName) => {
+    const wrap = document.createElement('span');
+    wrap.className = 'ov-acc';
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = ACCOUNTS[id].color;
+    wrap.appendChild(dot);
+    if (showName) {
+      const nm = document.createElement('span');
+      nm.textContent = ACCOUNTS[id].name;
+      wrap.appendChild(nm);
+    }
+    return wrap;
+  };
+
+  // 账号循环顺序（三天一轮）
+  const cycle = document.createElement('span');
+  cycle.className = 'ov-acc';
+  state.slots.forEach((id, i) => {
+    if (i) {
+      const arrow = document.createElement('span');
+      arrow.className = 'cnt';
+      arrow.textContent = '→';
+      cycle.appendChild(arrow);
+    }
+    cycle.appendChild(accNode(id, false));
+    const nm = document.createElement('span');
+    nm.textContent = ACCOUNTS[id].name;
+    cycle.appendChild(nm);
+  });
+  addRow(cycle, `${CYCLE_DAYS} 天一轮`);
+
+  // 各账号视频剩余次数（到今天为止，含今天的投影发布），达阈值时黄色提示
+  state.slots.forEach(id => {
+    const left = accountRemainingNow(id);
+    const node = accNode(id, true);
+    if (left <= warnThreshold()) {
+      node.classList.add('warn');
+      node.title = `剩余 ${left} 条，已达预警阈值（${warnThreshold()} 条）`;
+      const flag = document.createElement('span');
+      flag.className = 'ov-warn';
+      flag.textContent = '!';
+      node.appendChild(flag);
+    }
+    addRow(node, `剩余 ${left} 次`);
+  });
+
+  const mkLabel = label => {
+    const s = document.createElement('span');
+    s.className = 'ov-k';
+    s.textContent = label;
+    return s;
+  };
+
+  addRow(mkLabel('自动结算至'), formatCN(state.settledThrough));
+  addRow(mkLabel('临时调整'), `${(state.adjustments || []).length} 处`);
+  const pubCount = (Array.isArray(state.published) ? state.published : [])
+    .filter(r => r.status === 'published').length;
+  addRow(mkLabel('累计发布'), `${pubCount} 条`);
+}
+
+function renderAll() {
+  renderCalendar();
+  renderLegend();
+  renderStatusBar();
+  refreshNotifications();
+  renderNotifCenter();
+}
+
+/* =========================================================
+   右上角通知中心（v9）
+   ========================================================= */
+let notifMenuKey = null;
+
+function stampCN(ts) {
+  const d = new Date(ts);
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getMonth() + 1}月${d.getDate()}日 ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+function notifKeyOf(level, accountId) { return level + ':' + accountId; }
+
+function notifByKey(key) {
+  return (Array.isArray(state.notifications) ? state.notifications : []).find(n => n.key === key) || null;
+}
+
+/* 依据当前剩余条数生成 / 清理通知：
+   - 黄色：该账号剩余 ≤ 阈值，提醒优先拍摄「本该轮到」的内容
+   - 红色：该账号已用尽（今天用尽单独文案），推荐拍摄今天 / 下一轮要发的内容 */
+function refreshNotifications() {
+  if (!state.confirmed) return;
+  const th = warnThreshold();
+  const dismissed = new Set(Array.isArray(state.notifDismissed) ? state.notifDismissed : []);
+  let changed = false;
+
+  IDS.forEach(id => {
+    const left = accountRemainingNow(id);
+    const hasToday = isPublishDayToday(id);
+    const nextName = missingVideoName(id, state.rot[id]) || '';
+    const level = left <= 0 ? 'red' : (left <= th ? 'yellow' : 'ok');
+
+    if (level === 'ok') {
+      const before = state.notifications.length;
+      state.notifications = state.notifications.filter(n => n.accountId !== id);
+      if (state.notifications.length !== before) changed = true;
+      ['yellow', 'red'].forEach(lv => {
+        const k = notifKeyOf(lv, id);
+        if (dismissed.has(k)) { dismissed.delete(k); changed = true; }
+      });
+      return;
+    }
+
+    const key = notifKeyOf(level, id);
+    if (dismissed.has(key)) return;
+    if (state.notifications.some(n => n.key === key)) return;
+
+    let title, body;
+    if (level === 'red') {
+      title = hasToday ? `「${ACCOUNTS[id].name}」今天视频用尽` : `「${ACCOUNTS[id].name}」视频已用尽`;
+      const when = hasToday ? '今天这一轮' : '下一轮';
+      body = `${when}已无剩余视频可发；建议优先拍摄${when}发布需要的内容${nextName ? `，如「${nextName}」` : ''}。`;
+    } else {
+      title = `「${ACCOUNTS[id].name}」视频即将用尽`;
+      body = `仅剩 ${left} 条（预警阈值 ${th} 条）；建议优先拍摄${nextName ? `「${nextName}」等` : ''}接下来要发布的内容。`;
+    }
+
+    state.notifications.push({ key, level, accountId: id, title, body, ts: Date.now(), read: false });
+    changed = true;
+  });
+
+  if (changed) {
+    state.notifDismissed = Array.from(dismissed).slice(-200);
+    persist();
+  }
+}
+
+function renderNotifCenter() {
+  const listEl = document.getElementById('notifList');
+  const badge = document.getElementById('notifBadge');
+  if (!listEl || !badge) return;
+
+  const arr = (Array.isArray(state.notifications) ? state.notifications : [])
+    .slice()
+    .sort((a, b) => b.ts - a.ts);
+  const unread = arr.filter(n => !n.read).length;
+  badge.hidden = unread === 0;
+  badge.textContent = unread > 99 ? '99+' : String(unread);
+
+  if (!arr.length) {
+    listEl.innerHTML = '<div class="notif-empty">暂无通知。账号视频剩余量低于预警阈值时，这里会提醒你优先拍摄哪些内容。</div>';
+    return;
+  }
+
+  listEl.innerHTML = '';
+  arr.forEach(n => {
+    const item = document.createElement('div');
+    item.className = 'notif-item lv-' + n.level + (n.read ? ' read' : '');
+    item.dataset.key = n.key;
+    item.title = '左键：标记为已读　右键：改为未读 / 删除';
+
+    const t = document.createElement('div');
+    t.className = 'nt';
+    t.textContent = n.title;
+    const b = document.createElement('div');
+    b.className = 'nb';
+    b.textContent = n.body;
+    const m = document.createElement('div');
+    m.className = 'nm';
+    const st = document.createElement('span');
+    st.className = 'st';
+    st.textContent = n.read ? '已读' : '未读';
+    const tm = document.createElement('span');
+    tm.textContent = stampCN(n.ts);
+    m.append(st, tm);
+
+    item.append(t, b, m);
+    listEl.appendChild(item);
+  });
+}
+
+function markNotifRead(key, read) {
+  const n = notifByKey(key);
+  if (!n || n.read === read) return;
+  n.read = read;
+  persist();
+  renderNotifCenter();
+}
+
+function removeNotif(key) {
+  const before = Array.isArray(state.notifications) ? state.notifications.length : 0;
+  state.notifications = (state.notifications || []).filter(n => n.key !== key);
+  if (state.notifications.length === before) return;
+  state.notifDismissed = Array.from(new Set([...(state.notifDismissed || []), key])).slice(-200);
+  persist();
+  renderNotifCenter();
+}
+
+/* =========================================================
+   盘点 / 校准 弹窗（v9）
+   ========================================================= */
+function openInventory() {
+  renderInventoryDialog();
+  invOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeInventory() {
+  invOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderInventoryDialog() {
+  const body = document.getElementById('invBody');
+  const sub = document.getElementById('invSub');
+  if (!body) return;
+  if (sub) sub.textContent = `盘点截至 ${formatCN(todayStr())}：各账号、各内容各还剩多少条可用于发布，可直接改成实际值后确认校准。`;
+
+  body.innerHTML = '';
+  const note = document.createElement('div');
+  note.className = 'inv-note';
+  note.innerHTML = '校准口径：请填写<b>到今天为止（含今天已发布 / 待发布）</b>的实际剩余条数。确认后系统以此为基准继续自动扣减，<b>不会</b>改动任何历史发布记录；若今天还有该账号的发布安排，写入时会自动备扣 1 条，保证明天结算后不多一条、也不少一条。同一天可重复校准。';
+  body.appendChild(note);
+
+  IDS.forEach(id => {
+    const inv = accountInventory(id);
+    const blk = document.createElement('div');
+    blk.className = 'inv-acc';
+
+    const head = document.createElement('div');
+    head.className = 'inv-acc-head';
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = ACCOUNTS[id].color;
+    const an = document.createElement('span');
+    an.className = 'an';
+    an.textContent = ACCOUNTS[id].name;
+    const sum = document.createElement('span');
+    sum.className = 'sum';
+    sum.textContent = `系统盘点剩余 ${inv.reduce((s, r) => s + r.system, 0)} 条 · ${inv.length} 个内容`;
+    head.append(dot, an, sum);
+    blk.appendChild(head);
+
+    if (!inv.length) {
+      const e = document.createElement('div');
+      e.className = 'notif-empty';
+      e.textContent = '该账号尚未配置内容。';
+      blk.appendChild(e);
+      body.appendChild(blk);
+      return;
+    }
+
+    const table = document.createElement('table');
+    table.className = 'inv-table';
+    table.innerHTML = '<thead><tr><th>内容</th><th>系统盘点</th><th>实际剩余（可修改）</th><th>差异</th></tr></thead>';
+    const tb = document.createElement('tbody');
+
+    inv.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.className = 'inv-row-bg';
+
+      const td1 = document.createElement('td');
+      td1.className = 'vn';
+      td1.textContent = r.name;
+
+      const td2 = document.createElement('td');
+      td2.className = 'sys';
+      td2.textContent = String(r.system);
+
+      const td3 = document.createElement('td');
+      const inp = document.createElement('input');
+      inp.className = 'inv-input';
+      inp.type = 'number';
+      inp.min = '0';
+      inp.step = '1';
+      inp.value = String(r.system);
+      inp.dataset.acc = id;
+      inp.dataset.idx = String(r.videoIdx);
+      inp.dataset.sys = String(r.system);
+
+      const td4 = document.createElement('td');
+      td4.className = 'inv-delta';
+      td4.textContent = '—';
+
+      inp.addEventListener('input', () => {
+        const v = Math.max(0, Math.floor(Number(inp.value) || 0));
+        const d = v - r.system;
+        td4.className = 'inv-delta' + (d > 0 ? ' up' : (d < 0 ? ' down' : ''));
+        td4.textContent = d === 0 ? '—' : (d > 0 ? '+' + d : String(d));
+      });
+
+      td3.appendChild(inp);
+      tr.append(td1, td2, td3, td4);
+      tb.appendChild(tr);
+    });
+
+    table.appendChild(tb);
+    blk.appendChild(table);
+    body.appendChild(blk);
+  });
+}
+
+/* =========================================================
+   设置弹窗（v9 · 占位）
+   ========================================================= */
+function openSettings() {
+  const body = document.getElementById('setBody');
+  if (body) {
+    const themeVal = state.settings?.theme || 'auto';
+    const themeOptions = [
+      { value: 'auto', label: '跟随系统' },
+      { value: 'light', label: '浅色' },
+      { value: 'dark', label: '深色' }
+    ];
+    body.innerHTML = `
+      <div class="set-section">
+        <div class="set-label">主题</div>
+        <div class="theme-radio-group">
+          ${themeOptions.map(o => `
+            <label class="theme-radio-label" data-theme-val="${o.value}">
+              <input type="radio" name="themeOption" value="${o.value}" ${themeVal === o.value ? 'checked' : ''}>
+              <span class="theme-radio-text">${o.label}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+      <div class="set-section">
+        <div class="set-label">预警阈值</div>
+        <div class="set-cur">当前预警阈值：<b>剩余 ${warnThreshold()} 条</b></div>
+      </div>
+      <ul class="set-list">
+        <li>临界提醒：黄色感叹号 + 黄色描边</li>
+        <li>用尽提醒：红色描边通知，并推荐今天 / 下一轮优先拍摄的内容</li>
+        <li>通知中心支持已读、改为未读、删除与一键已读</li>
+      </ul>`;
+  }
+  // 绑定主题单选框
+  body.querySelectorAll('input[name="themeOption"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const val = radio.value;
+      applyTheme(val);
+      if (state.settings) state.settings.theme = val;
+      else state.settings = { theme: val };
+      persist();
+    });
+  });
+  setOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSettings() {
+  setOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* =========================================================
+   Toast
+   ========================================================= */
+let toastTimer;
+function toast(msg) {
+  let el = document.getElementById('toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+/* =========================================================
+   存档：导出 / 导入
+   ========================================================= */
+function exportArchive() {
+  const payload = {
+    app: 'video-publish-calendar',
+    version: 7,
+    exportedAt: new Date().toISOString(),
+    data: {
+      startDate: state.startDate,
+      slots: state.slots,
+      contents: state.contents,
+      confirmed: state.confirmed,
+      viewMonth: state.viewMonth,
+      pubCount: state.pubCount,
+      rot: state.rot,
+      published: state.published,
+      settledThrough: state.settledThrough,
+      adjustments: state.adjustments || [],
+      settings: state.settings || null,
+      notifications: state.notifications || [],
+      notifDismissed: state.notifDismissed || [],
+      calibrations: state.calibrations || []
+    }
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `发布日历存档_${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('存档已导出');
+}
+
+function importArchive(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(String(reader.result));
+      const payload = (parsed && parsed.data) ? parsed.data : parsed;
+      if (!payload || typeof payload !== 'object' || !Array.isArray(payload.slots)) {
+        throw new Error('bad format');
+      }
+      state = ensureExtras(normalize(payload));
+      persist();
+      renderAll();
+      toast('存档已导入');
+    } catch (err) {
+      toast('导入失败：文件格式不正确');
+    }
+  };
+  reader.onerror = () => toast('读取文件失败');
+  reader.readAsText(file);
+}
+
+/* =========================================================
+   导出为 Excel（v8）
+   —— 纯前端生成真正的 .xlsx（ZIP + OOXML），无外部依赖
+   ========================================================= */
+
+/* ---------------- 1. ZIP 打包（store 存储，不压缩） ---------------- */
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+
+function crc32Bytes(bytes) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+const utf8Bytes = str => new TextEncoder().encode(str);
+
+/* files: [{ name, data:Uint8Array }] → Blob(.xlsx) */
+function buildZip(files) {
+  const enc = new TextEncoder();
+  const parts = [];
+  const central = [];
+  const now = new Date();
+  const dosTime = ((now.getHours() & 31) << 11) | ((now.getMinutes() & 63) << 5) | (now.getSeconds() >> 1);
+  const dosDate = (((now.getFullYear() - 1980) & 127) << 9) | (((now.getMonth() + 1) & 15) << 5) | (now.getDate() & 31);
+  let offset = 0;
+
+  files.forEach(f => {
+    const nameBytes = enc.encode(f.name);
+    const data = f.data;
+    const crc = crc32Bytes(data);
+
+    const local = new Uint8Array(30 + nameBytes.length);
+    const lv = new DataView(local.buffer);
+    lv.setUint32(0, 0x04034b50, true);
+    lv.setUint16(4, 20, true);
+    lv.setUint16(6, 0x0800, true);   // 文件名 UTF-8
+    lv.setUint16(8, 0, true);        // 存储（无压缩）
+    lv.setUint16(10, dosTime, true);
+    lv.setUint16(12, dosDate, true);
+    lv.setUint32(14, crc, true);
+    lv.setUint32(18, data.length, true);
+    lv.setUint32(22, data.length, true);
+    lv.setUint16(26, nameBytes.length, true);
+    lv.setUint16(28, 0, true);
+    local.set(nameBytes, 30);
+    parts.push(local, data);
+
+    const cd = new Uint8Array(46 + nameBytes.length);
+    const cv = new DataView(cd.buffer);
+    cv.setUint32(0, 0x02014b50, true);
+    cv.setUint16(4, 20, true);
+    cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0x0800, true);
+    cv.setUint16(10, 0, true);
+    cv.setUint16(12, dosTime, true);
+    cv.setUint16(14, dosDate, true);
+    cv.setUint32(16, crc, true);
+    cv.setUint32(20, data.length, true);
+    cv.setUint32(24, data.length, true);
+    cv.setUint16(28, nameBytes.length, true);
+    cv.setUint32(42, offset, true);
+    cd.set(nameBytes, 46);
+    central.push(cd);
+
+    offset += local.length + data.length;
+  });
+
+  const centralSize = central.reduce((s, c) => s + c.length, 0);
+  const end = new Uint8Array(22);
+  const ev = new DataView(end.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(8, files.length, true);
+  ev.setUint16(10, files.length, true);
+  ev.setUint32(12, centralSize, true);
+  ev.setUint32(16, offset, true);
+
+  return new Blob(parts.concat(central, [end]),
+    { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+}
+
+/* ---------------- 2. OOXML（工作表 / 样式 / 关系） ---------------- */
+function xmlEsc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+}
+
+function colLetter(n) {
+  let s = '';
+  while (n > 0) {
+    const r = (n - 1) % 26;
+    s = String.fromCharCode(65 + r) + s;
+    n = Math.floor((n - 1) / 26);
+  }
+  return s;
+}
+
+/* rows：二维数组，单元格为 { v, n?, s? }（n=true 数字；s=样式下标，1 表头，2 标题） */
+function sheetXML(rows, widths) {
+  const cols = (widths && widths.length)
+    ? '<cols>' + widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('') + '</cols>'
+    : '';
+  const body = rows.map((row, ri) => {
+    const cells = (row || []).map((c, ci) => {
+      if (!c || c.v === '' || c.v == null) return '';
+      const ref = colLetter(ci + 1) + (ri + 1);
+      const st = c.s ? ` s="${c.s}"` : '';
+      if (c.n) return `<c r="${ref}"${st}><v>${Number(c.v)}</v></c>`;
+      return `<c r="${ref}"${st} t="inlineStr"><is><t xml:space="preserve">${xmlEsc(c.v)}</t></is></c>`;
+    }).join('');
+    return `<row r="${ri + 1}">${cells}</row>`;
+  }).join('');
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+    + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+    + '<sheetViews><sheetView workbookViewId="0"/></sheetViews>'
+    + cols + '<sheetData>' + body + '</sheetData></worksheet>';
+}
+
+const XLSX_STYLES_XML = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+  + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+  + '<fonts count="3">'
+  + '<font><sz val="11"/><name val="微软雅黑"/></font>'
+  + '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="微软雅黑"/></font>'
+  + '<font><b/><sz val="12"/><color rgb="FF1F2430"/><name val="微软雅黑"/></font>'
+  + '</fonts>'
+  + '<fills count="3">'
+  + '<fill><patternFill patternType="none"/></fill>'
+  + '<fill><patternFill patternType="gray125"/></fill>'
+  + '<fill><patternFill patternType="solid"><fgColor rgb="FF2F6BFF"/><bgColor indexed="64"/></patternFill></fill>'
+  + '</fills>'
+  + '<borders count="1"><border/></borders>'
+  + '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+  + '<cellXfs count="3">'
+  + '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+  + '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>'
+  + '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
+  + '</cellXfs>'
+  + '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+  + '</styleSheet>';
+
+/* sheets: [{ name, rows, widths }] → Blob(.xlsx) */
+function buildXlsxBlob(sheets) {
+  const sheetFiles = sheets.map((s, i) => ({
+    name: `xl/worksheets/sheet${i + 1}.xml`,
+    data: utf8Bytes(sheetXML(s.rows, s.widths))
+  }));
+
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+    + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+    + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+    + '<Default Extension="xml" ContentType="application/xml"/>'
+    + '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+    + sheets.map((s, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')
+    + '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+    + '</Types>';
+
+  const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+    + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+    + '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+    + '</Relationships>';
+
+  const workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+    + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+    + '<sheets>' + sheets.map((s, i) => `<sheet name="${xmlEsc(s.name)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('') + '</sheets>'
+    + '</workbook>';
+
+  const wbRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+    + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+    + sheets.map((s, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('')
+    + `<Relationship Id="rId${sheets.length + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>`
+    + '</Relationships>';
+
+  return buildZip([
+    { name: '[Content_Types].xml', data: utf8Bytes(contentTypes) },
+    { name: '_rels/.rels', data: utf8Bytes(rootRels) },
+    { name: 'xl/workbook.xml', data: utf8Bytes(workbook) },
+    { name: 'xl/_rels/workbook.xml.rels', data: utf8Bytes(wbRels) },
+    { name: 'xl/styles.xml', data: utf8Bytes(XLSX_STYLES_XML) }
+  ].concat(sheetFiles));
+}
+
+/* ---------------- 3. 某月数据收集（无副作用） ---------------- */
+const WEEK_CN_LIST = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+const weekCN = dateStr => WEEK_CN_LIST[(parseDate(dateStr).getDay() + 6) % 7];
+
+function monthRange(ym) {
+  const [y, m] = ym.split('-').map(Number);
+  const days = new Date(y, m, 0).getDate();
+  return { from: `${ym}-01`, to: `${ym}-${pad(days)}`, days };
+}
+
+function cycleText() {
+  return state.confirmed
+    ? state.slots.filter(Boolean).map(id => ACCOUNTS[id].name).join(' → ')
+    : '未排期';
+}
+
+function monthOpsOf(ym) {
+  const { from, to } = monthRange(ym);
+  return (Array.isArray(state.adjustments) ? state.adjustments : []).filter(o =>
+    o.kind === 'insert'
+      ? (o.date >= from && o.date <= to)
+      : ((o.a >= from && o.a <= to) || (o.b >= from && o.b <= to))
+  );
+}
+
+function collectMonth(ym) {
+  const { from, to, days } = monthRange(ym);
+  const sched = state.confirmed ? buildSchedule(from, to) : {};
+  const ops = monthOpsOf(ym);
+  const stats = {};
+  IDS.forEach(id => { stats[id] = { pub: 0, manual: 0, missing: 0 }; });
+
+  const rows = [];
+  let arranged = 0, missingDays = 0, adjustedDays = 0;
+
+  for (let i = 0; i < days; i++) {
+    const date = addDays(from, i);
+    const info = sched[date] || null;
+    const rec = (Array.isArray(state.published) ? state.published : []).find(r => r.date === date) || null;
+
+    const adjParts = [];
+    ops.forEach(o => {
+      if (o.kind === 'insert' && o.date === date) {
+        adjParts.push(`插入发布（${accName(o.accountId)}），该日及之后顺延一天`);
+      }
+      if (o.kind === 'swap' && (o.a === date || o.b === date)) {
+        adjParts.push(`与 ${formatCN(o.a === date ? o.b : o.a)} 互换发布`);
+      }
+    });
+    if (adjParts.length) adjustedDays++;
+
+    let account = '—', video = '—', left = null, statusText = '';
+    if (info && info.accountId) {
+      arranged++;
+      account = ACCOUNTS[info.accountId].name;
+      if (info.hasVideo) {
+        video = info.name;
+        left = info.remaining;
+        if (info.settled) {
+          const manual = !!(rec && rec.manual);
+          statusText = manual ? '已发布（手动扣减）' : '已发布（自动扣减）';
+          stats[info.accountId].pub++;
+          if (manual) stats[info.accountId].manual++;
+        } else {
+          statusText = '待发布（按当前计划投影）';
+        }
+      } else {
+        video = '本期缺视频';
+        left = 0;
+        statusText = '缺视频（该账号暂无可发视频）';
+        stats[info.accountId].missing++;
+        missingDays++;
+      }
+    } else {
+      statusText = state.confirmed ? '未排期' : '尚未排期';
+    }
+
+    rows.push({
+      date, week: weekCN(date), account, video, left,
+      statusText, adj: adjParts.join('；')
+    });
+  }
+
+  return { ym, from, to, days, rows, stats, ops, arranged, missingDays, adjustedDays };
+}
+
+/* ---------------- 4. 生成该月 xlsx ---------------- */
+function buildMonthXlsx(ym) {
+  const d = collectMonth(ym);
+  const now = new Date();
+  const nowStr = `${fmt(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const head = arr => arr.map(t => ({ v: t, s: 1 }));
+  const title = t => [{ v: t, s: 2 }];
+
+  /* ---- 工作表 1：发布明细 ---- */
+  const detail = [];
+  detail.push(title(`视频发布日历 · ${ym} 发布情况`));
+  detail.push([
+    { v: `导出时间：${nowStr}` },
+    { v: `账号循环：${cycleText()}` },
+    { v: `自动结算至：${state.confirmed ? formatCN(state.settledThrough) : '未排期'}` }
+  ]);
+  detail.push([
+    { v: `本月临时调整：${d.ops.length} 处（历史累计 ${(state.adjustments || []).length} 处）` },
+    { v: `有发布安排：${d.arranged} 天` },
+    { v: `缺视频：${d.missingDays} 天` }
+  ]);
+  detail.push([]);
+  detail.push(head(['日期', '星期', '发布账号', '视频名称', '发布后剩余次数', '状态', '临时调整']));
+  d.rows.forEach(r => {
+    detail.push([
+      { v: r.date },
+      { v: r.week },
+      { v: r.account },
+      { v: r.video },
+      (r.left == null ? { v: '' } : { v: r.left, n: true }),
+      { v: r.statusText },
+      { v: r.adj }
+    ]);
+  });
+
+  /* ---- 工作表 2：汇总 ---- */
+  const sum = [];
+  sum.push(title('发布情况汇总'));
+  sum.push([]);
+  sum.push(title('基本信息'));
+  sum.push([{ v: `统计月份：${ym}` }]);
+  sum.push([{ v: `日期范围：${d.from} ~ ${d.to}（共 ${d.days} 天）` }]);
+  sum.push([{ v: `账号循环：${cycleText()}` }]);
+  sum.push([{ v: `自动结算至：${state.confirmed ? formatCN(state.settledThrough) : '未排期'}` }]);
+  sum.push([{ v: `导出时间：${nowStr}` }]);
+  sum.push([]);
+  sum.push(title('各账号统计'));
+  sum.push(head(['账号', '本月发布次数', '其中手动扣减', '缺视频天数', '当前剩余次数', '视频条数']));
+  IDS.forEach(id => {
+    const list = state.contents[id] || [];
+    const left = list.reduce((s, v) => s + sanitizeCount(v.count), 0);
+    sum.push([
+      { v: ACCOUNTS[id].name },
+      { v: d.stats[id].pub, n: true },
+      { v: d.stats[id].manual, n: true },
+      { v: d.stats[id].missing, n: true },
+      { v: left, n: true },
+      { v: list.length, n: true }
+    ]);
+  });
+  sum.push([]);
+  sum.push(title(`本月临时调整记录（共 ${d.ops.length} 处）`));
+  if (d.ops.length) {
+    sum.push(head(['涉及日期', '类型', '说明']));
+    const ordered = d.ops.slice().sort((x, y) => {
+      const dxx = x.kind === 'insert' ? x.date : (x.a < x.b ? x.a : x.b);
+      const dyy = y.kind === 'insert' ? y.date : (y.a < y.b ? y.a : y.b);
+      if (dxx !== dyy) return dxx < dyy ? -1 : 1;
+      return 0;
+    });
+    ordered.forEach(o => {
+      if (o.kind === 'insert') {
+        sum.push([
+          { v: o.date },
+          { v: '插入发布' },
+          { v: `在 ${formatCN(o.date)} 插入 ${accName(o.accountId)} 的发布，该日及之后整体顺延一天` }
+        ]);
+      } else {
+        sum.push([
+          { v: `${o.a} / ${o.b}` },
+          { v: '互换发布' },
+          { v: `${formatCN(o.a)} 与 ${formatCN(o.b)} 互换发布安排（账号与其轮到的视频一起互换）` }
+        ]);
+      }
+    });
+  } else {
+    sum.push([{ v: '本月没有互换 / 插入等临时调整。' }]);
+  }
+  sum.push([]);
+  sum.push(title('各账号视频剩余次数'));
+  sum.push(head(['账号', '视频名称', '剩余次数']));
+  IDS.forEach(id => {
+    (state.contents[id] || []).forEach(v => {
+      sum.push([
+        { v: ACCOUNTS[id].name },
+        { v: (v.name || '').trim() || '未命名视频' },
+        { v: sanitizeCount(v.count), n: true }
+      ]);
+    });
+  });
+
+  return buildXlsxBlob([
+    { name: '发布明细', rows: detail, widths: [13, 7, 11, 30, 15, 22, 40] },
+    { name: '汇总', rows: sum, widths: [18, 15, 14, 12, 15, 12, 40] }
+  ]);
+}
+
+/* ---------------- 5. 导出弹窗：选择月份 ---------------- */
+const xlsOverlay = document.getElementById('xlsOverlay');
+let xlsMonth = null;
+
+function openXlsDialog() {
+  const { y, m } = viewYM();
+  xlsMonth = `${y}-${pad(m + 1)}`;
+  renderXlsDialog();
+  xlsOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeXlsDialog() {
+  xlsOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function xlsCandidateMonths() {
+  const set = new Set();
+  const now = new Date();
+  set.add(`${now.getFullYear()}-${pad(now.getMonth() + 1)}`);
+  const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  set.add(`${prev.getFullYear()}-${pad(prev.getMonth() + 1)}`);
+  const { y, m } = viewYM();
+  set.add(`${y}-${pad(m + 1)}`);
+  if (state.confirmed && state.startDate) set.add(state.startDate.slice(0, 7));
+  (Array.isArray(state.published) ? state.published : []).forEach(r => set.add(r.date.slice(0, 7)));
+  (Array.isArray(state.adjustments) ? state.adjustments : []).forEach(o => {
+    (o.kind === 'insert' ? [o.date] : [o.a, o.b]).forEach(dt => set.add(dt.slice(0, 7)));
+  });
+  return Array.from(set).sort().slice(-6);
+}
+
+function renderXlsDialog() {
+  const input = document.getElementById('xlsMonth');
+  input.value = xlsMonth || '';
+  input.oninput = () => {
+    xlsMonth = input.value;
+    renderXlsPreview();
+  };
+  input.onchange = () => {
+    xlsMonth = input.value;
+    renderXlsPreview();
+  };
+
+  renderXlsPreview();
+}
+
+function renderXlsPreview() {
+  const pv = document.getElementById('xlsPreview');
+  const st = document.getElementById('xlsStatus');
+  const confirmBtn = document.getElementById('btnXlsConfirm');
+
+  if (!xlsMonth || !/^\d{4}-\d{2}$/.test(xlsMonth)) {
+    pv.innerHTML = '<div class="adj-warn">请选择要导出的月份。</div>';
+    confirmBtn.disabled = true;
+    st.textContent = '';
+    return;
+  }
+  confirmBtn.disabled = false;
+
+  const d = collectMonth(xlsMonth);
+  const lines = [
+    `文件：发布情况_${xlsMonth}.xlsx（工作表：发布明细 / 汇总）`,
+    `日期范围：${d.from} ~ ${d.to}，共 ${d.days} 天`,
+    `有发布安排 ${d.arranged} 天　·　缺视频 ${d.missingDays} 天`,
+    `临时调整 ${d.ops.length} 处（涉及 ${d.adjustedDays} 天）`
+  ];
+  IDS.forEach(id => {
+    const s = d.stats[id];
+    lines.push(`${ACCOUNTS[id].name}：发布 ${s.pub} 次${s.manual ? `（手动 ${s.manual} 次）` : ''}`);
+  });
+  pv.innerHTML = `<div class="xls-sum">${lines.map(t => `<div>${escapeHTML(t)}</div>`).join('')}</div>`;
+  st.textContent = `将导出 ${d.days} 行发布明细`;
+}
+
+document.getElementById('btnExportExcel').addEventListener('click', openXlsDialog);
+document.getElementById('btnCloseXls').addEventListener('click', closeXlsDialog);
+document.getElementById('btnXlsCancel').addEventListener('click', closeXlsDialog);
+xlsOverlay.addEventListener('mousedown', ev => {
+  if (ev.target === xlsOverlay) closeXlsDialog();
+});
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape' && xlsOverlay.classList.contains('open')) closeXlsDialog();
+});
+
+document.getElementById('btnXlsConfirm').addEventListener('click', () => {
+  if (!xlsMonth || !/^\d{4}-\d{2}$/.test(xlsMonth)) { toast('请先选择要导出的月份'); return; }
+  try {
+    const blob = buildMonthXlsx(xlsMonth);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `发布情况_${xlsMonth}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const ym = xlsMonth;
+    closeXlsDialog();
+    toast(`${ym} 发布情况已导出为 Excel`);
+  } catch (err) {
+    toast('导出失败：' + ((err && err.message) || '未知错误'));
+  }
+});
+
+/* =========================================================
+   事件绑定
+   ========================================================= */
+/* 通知中心：铃铛展开 / 收起、左键已读、右键菜单、一键已读 */
+document.getElementById('notifBtn').addEventListener('click', ev => {
+  ev.stopPropagation();
+  hideNotifMenu();
+  document.getElementById('notifCenter').classList.toggle('open');
+});
+document.getElementById('notifList').addEventListener('click', ev => {
+  const item = ev.target.closest ? ev.target.closest('.notif-item') : null;
+  if (!item) return;
+  markNotifRead(item.dataset.key, true);
+});
+document.getElementById('notifList').addEventListener('contextmenu', ev => {
+  const item = ev.target.closest ? ev.target.closest('.notif-item') : null;
+  if (!item) return;
+  ev.preventDefault();
+  openNotifMenu(ev.clientX, ev.clientY, item.dataset.key);
+});
+document.getElementById('btnNotifReadAll').addEventListener('click', ev => {
+  ev.stopPropagation();
+  let n = 0;
+  (state.notifications || []).forEach(x => { if (!x.read) { x.read = true; n++; } });
+  if (!n) { toast('没有未读通知'); return; }
+  persist();
+  renderNotifCenter();
+  toast('已把全部通知标为已读');
+});
+
+function openNotifMenu(x, y, key) {
+  const menu = document.getElementById('notifMenu');
+  const n = notifByKey(key);
+  notifMenuKey = key;
+  menu.innerHTML = `<button type="button" data-act="toggle">${n && n.read ? '标为未读' : '标为已读'}</button>
+    <button type="button" data-act="del">删除该通知</button>`;
+  menu.hidden = false;
+  menu.style.left = '0px';
+  menu.style.top = '0px';
+  const r = menu.getBoundingClientRect();
+  const pad = 8;
+  let left = x, top = y;
+  if (left + r.width > window.innerWidth - pad) left = window.innerWidth - r.width - pad;
+  if (top + r.height > window.innerHeight - pad) top = window.innerHeight - r.height - pad;
+  menu.style.left = Math.max(pad, left) + 'px';
+  menu.style.top = Math.max(pad, top) + 'px';
+}
+
+function hideNotifMenu() {
+  const menu = document.getElementById('notifMenu');
+  if (menu) menu.hidden = true;
+  notifMenuKey = null;
+}
+
+document.getElementById('notifMenu').addEventListener('click', ev => {
+  const b = ev.target.closest ? ev.target.closest('button') : null;
+  if (!b) return;
+  const key = notifMenuKey;
+  hideNotifMenu();
+  if (!key) return;
+  if (b.dataset.act === 'toggle') {
+    const n = notifByKey(key);
+    markNotifRead(key, !(n && n.read));
+  } else if (b.dataset.act === 'del') {
+    removeNotif(key);
+    toast('已删除该通知');
+  }
+});
+
+document.addEventListener('click', ev => {
+  hideNotifMenu();
+  const inside = ev.target && ev.target.closest && ev.target.closest('#notifCenter');
+  if (!inside) document.getElementById('notifCenter').classList.remove('open');
+});
+document.addEventListener('contextmenu', ev => {
+  if (!ev.target || !ev.target.closest || !ev.target.closest('.notif-item')) hideNotifMenu();
+});
+
+/* 盘点 / 校准 弹窗 */
+document.getElementById('btnInventory').addEventListener('click', openInventory);
+document.getElementById('btnCloseInv').addEventListener('click', closeInventory);
+document.getElementById('btnInvCancel').addEventListener('click', closeInventory);
+document.getElementById('btnInvReset').addEventListener('click', renderInventoryDialog);
+invOverlay.addEventListener('mousedown', ev => {
+  if (ev.target === invOverlay) closeInventory();
+});
+document.getElementById('btnInvConfirm').addEventListener('click', () => {
+  const rows = [];
+  document.querySelectorAll('#invBody .inv-input').forEach(inp => {
+    rows.push({
+      accountId: inp.dataset.acc,
+      videoIdx: Number(inp.dataset.idx),
+      value: Math.max(0, Math.floor(Number(inp.value) || 0))
+    });
+  });
+  if (!rows.length) { toast('没有可校准的内容'); return; }
+  applyCalibration(rows);
+  persist();
+  renderAll();
+  closeInventory();
+  toast('已完成盘点校准，后续扣减以校准值为基准');
+});
+
+/* 设置弹窗（占位） */
+document.getElementById('btnSettings').addEventListener('click', openSettings);
+document.getElementById('btnCloseSet').addEventListener('click', closeSettings);
+document.getElementById('btnSetOk').addEventListener('click', closeSettings);
+setOverlay.addEventListener('mousedown', ev => {
+  if (ev.target === setOverlay) closeSettings();
+});
+
+document.getElementById('btnOpenModal').addEventListener('click', openModal);
+document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+document.getElementById('btnCancel').addEventListener('click', closeModal);
+
+overlay.addEventListener('mousedown', ev => {
+  if (ev.target === overlay) closeModal();
+});
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+});
+
+/* 确定 */
+document.getElementById('btnConfirm').addEventListener('click', () => {
+  if (!draft) return;
+  if (draft.slots.some(s => !s)) { toast('请先把三天计划排满'); return; }
+
+  // 全新起点：首次排期，或点击「清空重排」后重新确认
+  const fresh = !state.confirmed || draft.fresh;
+
+  state.slots = draft.slots.slice();
+  state.contents = draft.contents;
+  state.confirmed = true;
+  state.viewMonth = null;
+
+  if (fresh) {
+    const today = todayStr();
+    state.startDate = today;            // 周期基准点 = 今天
+    state.pubCount = emptyCounts();
+    state.rot = emptyCounts();
+    state.published = [];
+    state.settledThrough = addDays(today, -1);
+  }
+
+  settle();   // 结算历史发布日（发布日 < 今日）；今天当天不扣，次日才扣
+  persist();
+  renderAll();
+  closeModal();
+  toast(fresh ? '已生成发布日历，次日起自动扣减' : '发布计划已更新');
+});
+
+/* 清空重排 */
+document.getElementById('btnClear').addEventListener('click', () => {
+  if (!draft) return;
+  draft.slots = [null, null, null];
+  draft.contents = defaultContents();
+  draft.activeAccount = IDS[0];
+  draft.fresh = true;   // 清空重排后确认 → 视为全新起点，重置周期与结算
+  renderModal();
+  toast('已清空，重新排吧');
+});
+
+/* 月份切换 */
+document.getElementById('prevMonth').addEventListener('click', () => {
+  const { y, m } = viewYM();
+  const d = new Date(y, m - 1, 1);
+  state.viewMonth = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+  persist();
+  renderCalendar();
+});
+
+document.getElementById('nextMonth').addEventListener('click', () => {
+  const { y, m } = viewYM();
+  const d = new Date(y, m + 1, 1);
+  state.viewMonth = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+  persist();
+  renderCalendar();
+});
+
+document.getElementById('todayBtn').addEventListener('click', () => {
+  state.viewMonth = null;
+  persist();
+  renderCalendar();
+});
+
+/* 导入导出 */
+document.getElementById('btnExport').addEventListener('click', exportArchive);
+document.getElementById('btnImport').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+document.getElementById('fileInput').addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0];
+  if (f) importArchive(f);
+  e.target.value = '';
+});
+
+/* =========================================================
+   临时调整发布策略：右键菜单 + 调整弹窗（v7）
+   ========================================================= */
+const ctxMenuEl = document.getElementById('ctxMenu');
+const adjOverlay = document.getElementById('adjOverlay');
+let ctxDate = null;      // 当前右键的日期
+let adjDraft = null;     // { mode:'swap'|'insert', date, target, accountId }
+
+const WEEK_CN = ['日', '一', '二', '三', '四', '五', '六'];
+function dateCN(s) {
+  const d = parseDate(s);
+  return `${formatCN(s)} 周${WEEK_CN[d.getDay()]}`;
+}
+const accName = id => (id && ACCOUNTS[id]) ? ACCOUNTS[id].name : '未排期';
+
+/* 账号小标签（右键菜单 / 预览共用） */
+function accChipHTML(id) {
+  if (!id || !ACCOUNTS[id]) {
+    return `<span class="ctx-acc" style="border-color:var(--border);background:var(--bg-soft);color:var(--text-muted)">未排期</span>`;
+  }
+  const a = ACCOUNTS[id];
+  return `<span class="ctx-acc" style="background:${a.bg};color:${a.color};border-color:${a.border}">${escapeHTML(a.name)}</span>`;
+}
+
+/* date → 与它互换的另一天 */
+function swapPartnerMap() {
+  const m = {};
+  (Array.isArray(state.adjustments) ? state.adjustments : []).forEach(o => {
+    if (o.kind === 'swap') { m[o.a] = o.b; m[o.b] = o.a; }
+  });
+  return m;
+}
+
+/* ---------- 右键菜单 ---------- */
+function hideCtxMenu() { ctxMenuEl.hidden = true; }
+
+function openCtxMenu(x, y, date) {
+  if (!state.confirmed) { toast('请先在侧边栏点「设置发布计划」完成排期'); return; }
+  ctxDate = date;
+  const adjustables = Array.isArray(state.adjustments) ? state.adjustments : [];
+  const today = todayStr();
+  const rec = recordOn(date);
+  const isPastOrToday = daysBetween(date, today) >= 0;      // 今天或更早
+  const isToday = date === today;
+  const isFuture = daysBetween(today, date) > 0;            // 今天之后
+  const todayManual = isToday ? todayManuallySettled() : false;   // 今天是否已手动扣减
+
+  /* 当天调整规则（v10）：
+     - 今天之后：互换 / 插入 / 修改均可
+     - 今天且尚未手动扣减：互换 / 插入 / 修改均可
+     - 今天且已手动扣减：仍可插入或修改今天的发布（会即时同步今天的扣减），但不可再互换
+     - 更早的日期：不可调整 */
+  const canSwap = isFuture || (isToday && !todayManual);
+  const canAdjust = isFuture || isToday;
+
+  let html = `<div class="ctx-head"><span class="ctx-date">${dateCN(date)}</span>${accChipHTML(accountOn(date))}</div>`;
+  if (!canSwap && !canAdjust) {
+    html += `<div class="ctx-note">该日不可做「互换 / 插入 / 修改」调整，请右键今天或之后的日期。</div>`;
+  } else {
+    if (canSwap) html += `<button class="ctx-item" data-act="swap" type="button"><span class="ico">⇄</span>与另一天互换发布</button>`;
+    if (canAdjust) html += `<button class="ctx-item" data-act="insert" type="button"><span class="ico">＋</span>插入发布<span class="sub-t">可选内容 / 顺延或独立</span></button>`;
+    if (canAdjust) html += `<button class="ctx-item" data-act="change" type="button"><span class="ico">✎</span>修改此日发布内容<span class="sub-t">只改此日 / 并沿用</span></button>`;
+    if (isToday && todayManual) html += `<div class="ctx-note">今天已手动扣减，仍可插入或修改今天的发布；改动会即时同步今天的扣减，且可撤销。</div>`;
+  }
+
+  /* 发布状态：当天及之前可手动扣减 / 撤销 */
+  if (isPastOrToday) {
+    if (rec && rec.accountId && rec.status === 'published') {
+      html += `<div class="ctx-sep"></div>`;
+      html += `<button class="ctx-item" data-act="unpublish" type="button"><span class="ico">✕</span>此视频未发<span class="sub-t">撤销当日扣减</span></button>`;
+    } else if (!rec) {
+      if (accountOn(date)) {
+        html += `<div class="ctx-sep"></div>`;
+        html += `<button class="ctx-item" data-act="publish" type="button"><span class="ico">✓</span>已发布视频<span class="sub-t">立即扣减</span></button>`;
+      } else {
+        html += `<div class="ctx-sep"></div>`;
+        html += `<div class="ctx-note">该日没有发布安排。</div>`;
+      }
+    } else {
+      html += `<div class="ctx-sep"></div>`;
+      html += `<div class="ctx-note">该日缺视频，无可撤销的扣减。</div>`;
+    }
+  }
+
+  if (adjustables.length) {
+    html += `<div class="ctx-sep"></div>`;
+    html += `<button class="ctx-item" data-act="undo" type="button"><span class="ico">↩</span>撤销最近一次调整<span class="sub-t">共 ${adjustables.length} 处</span></button>`;
+  }
+  ctxMenuEl.innerHTML = html;
+  ctxMenuEl.hidden = false;
+  ctxMenuEl.style.left = '0px';
+  ctxMenuEl.style.top = '0px';
+
+  const rect = ctxMenuEl.getBoundingClientRect();
+  const pad = 8;
+  let left = x, top = y;
+  if (left + rect.width > window.innerWidth - pad) left = window.innerWidth - rect.width - pad;
+  if (top + rect.height > window.innerHeight - pad) top = window.innerHeight - rect.height - pad;
+  ctxMenuEl.style.left = Math.max(pad, left) + 'px';
+  ctxMenuEl.style.top = Math.max(pad, top) + 'px';
+}
+
+ctxMenuEl.addEventListener('click', ev => {
+  const btn = ev.target.closest ? ev.target.closest('.ctx-item') : null;
+  if (!btn || btn.disabled) return;
+  const act = btn.dataset.act;
+  const date = ctxDate;
+  hideCtxMenu();
+  if (act === 'swap') openAdjustDialog('swap', date);
+  else if (act === 'insert') openAdjustDialog('insert', date);
+  else if (act === 'change') openAdjustDialog('change', date);
+  else if (act === 'undo') undoLastAdjustment();
+  else if (act === 'publish') manualPublish(date);
+  else if (act === 'unpublish') undoPublish(date);
+});
+
+document.addEventListener('click', hideCtxMenu);
+document.addEventListener('contextmenu', ev => {
+  if (!ev.target || !ev.target.closest || !ev.target.closest('.cell')) hideCtxMenu();
+});
+window.addEventListener('scroll', hideCtxMenu, true);
+window.addEventListener('resize', hideCtxMenu);
+
+/* ---------- 调整弹窗 ---------- */
+function openAdjustDialog(mode, date) {
+  const rec = recordOn(date);
+  const curAcc = (rec && rec.accountId) || accountOn(date) || IDS[0];
+  adjDraft = {
+    mode,                       // 'swap' | 'insert' | 'change'
+    date,
+    target: addDays(date, 1),   // 互换：目标日
+    accountId: curAcc,          // 插入 / 修改：账号
+    videoIdx: null,             // 插入 / 修改：指定内容下标（null = 按轮播自动）
+    pickName: '',               // 指定内容的名称（用于展示与回填）
+    useNew: false,              // 插入 / 修改：现场新增一条内容
+    newName: '',                // 新增内容名称
+    newCount: 1,                // 新增内容可发布条数
+    insertMode: 'shift',        // 'shift' 顺延 | 'standalone' 不影响后续
+    changeScope: 'day'          // 'day' 只改此日 | 'onward' 改此日并沿用
+  };
+  renderAdjustDialog();
+  adjOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAdjustDialog() {
+  adjOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+  adjDraft = null;
+}
+
+/* 草稿里「发布什么内容」→ { videoIdx, name }；无效返回 null */
+function draftSpecOf(d) {
+  if (!d) return null;
+  if (d.useNew) {
+    const nm = (d.newName || '').trim();
+    if (!nm) return null;
+    return { videoIdx: null, name: nm };            // 现场新增：按名称指定，确认时才写入内容库
+  }
+  if (Number.isInteger(d.videoIdx) && d.videoIdx >= 0) {
+    return { videoIdx: d.videoIdx, name: d.pickName || '' };
+  }
+  return { videoIdx: null, name: '' };              // 不指定：按轮播自动
+}
+
+/* 草稿 → 调整操作；不合法返回 null */
+function draftToOp() {
+  if (!adjDraft) return null;
+  const d = adjDraft;
+
+  if (d.mode === 'swap') {
+    const b = d.target;
+    if (!b || !DATE_RE.test(b)) return null;
+    if (b === d.date) return null;
+    if (daysBetween(todayStr(), b) <= 0) return null;
+    return { kind: 'swap', a: d.date, b };
+  }
+
+  if (!ACCOUNTS[d.accountId]) return null;
+  const spec = draftSpecOf(d);
+  if (!spec) return null;
+
+  if (d.mode === 'insert') {
+    const op = {
+      kind: 'insert', date: d.date, accountId: d.accountId,
+      mode: d.insertMode === 'standalone' ? 'standalone' : 'shift'
+    };
+    if (spec.videoIdx !== null) { op.videoIdx = spec.videoIdx; op.name = spec.name; }
+    else if (spec.name) op.name = spec.name;
+    return op;
+  }
+
+  const op = {
+    kind: 'change', date: d.date, accountId: d.accountId,
+    scope: d.changeScope === 'onward' ? 'onward' : 'day'
+  };
+  const slot = state.slots.indexOf(d.accountId);
+  if (slot >= 0) op.slotIdx = slot;
+  if (spec.videoIdx !== null) { op.videoIdx = spec.videoIdx; op.name = spec.name; }
+  else if (spec.name) op.name = spec.name;
+  return op;
+}
+
+/* 弹窗预览行：日期 + 账号 + 内容名 + 角标 */
+function pvRowHTML(date, accountId, tag, videoName, hasVideo, tagClass, hideDate) {
+  const nm = hasVideo ? videoName : (videoName ? `缺「${videoName}」` : '缺视频');
+  return `<div class="adj-pv-row">
+      <span class="pv-date">${hideDate ? '' : formatCN(date)}</span>
+      ${accChipHTML(accountId)}
+      <span class="pv-vname${hasVideo ? '' : ' empty'}">${escapeHTML(nm)}</span>
+      ${tag ? `<span class="pv-tag ${tagClass || ''}">${escapeHTML(tag)}</span>` : ''}
+    </div>`;
+}
+
+function renderAdjustDialog() {
+  if (!adjDraft) return;
+  const swap = adjDraft.mode === 'swap';
+  const date = adjDraft.date;
+  const body = document.getElementById('adjBody');
+  const confirmBtn = document.getElementById('btnAdjConfirm');
+
+  const isChangeMode = adjDraft.mode === 'change';
+  document.getElementById('adjTitle').textContent =
+    swap ? '与另一天互换发布' : (isChangeMode ? '修改该日发布内容' : '插入发布计划');
+  document.getElementById('adjSub').textContent = swap
+    ? '把两天的发布安排整体互换：账号与它轮到的视频一起换到另一天。'
+    : (isChangeMode
+      ? '替换该日发布的账号与内容，可选「只改此日」或「改此日并沿用」。'
+      : '在该日插入一条发布：可指定账号与要发布的具体内容，并选择是否影响后续顺序。');
+  body.innerHTML = '';
+
+  if (swap) {
+    /* 1. 选择目标日期 */
+    const blk1 = document.createElement('div');
+    blk1.className = 'adj-block';
+    blk1.innerHTML = `<div class="adj-label">与哪一天互换</div>
+      <input class="adj-date-input" type="date" id="adjTarget" min="${addDays(todayStr(), 1)}" value="${adjDraft.target || ''}">
+      <div class="adj-help">只能选择今天之后、且不同于 ${formatCN(date)} 的另一天；调整可连续多次执行。</div>`;
+    body.appendChild(blk1);
+
+    /* 2. 预览 */
+    const blk2 = document.createElement('div');
+    blk2.className = 'adj-block';
+    blk2.innerHTML = `<div class="adj-label">调整预览</div>`;
+    const pv = document.createElement('div');
+    pv.className = 'adj-preview';
+    blk2.appendChild(pv);
+    body.appendChild(blk2);
+
+    const renderPv = () => {
+      const op = draftToOp();
+      if (!op) {
+        pv.innerHTML = `<div class="adj-warn">目标日期不合法：请选择今天之后、且不同于 ${formatCN(date)} 的另一天。</div>`;
+        confirmBtn.disabled = true;
+        return;
+      }
+      confirmBtn.disabled = false;
+      const ops = (Array.isArray(state.adjustments) ? state.adjustments : []).concat([op]);
+      const afterA = previewTimeline(ops, date, 1)[date];
+      const afterB = previewTimeline(ops, adjDraft.target, 1)[adjDraft.target];
+      pv.innerHTML = `
+        <div class="pv-title">互换前：</div>
+        <div class="adj-swap-line">
+          <span class="pv-date">${formatCN(date)}</span>${accChipHTML(accountOn(date))}
+          <span style="color:var(--text-soft)">⇄</span>
+          <span class="pv-date">${formatCN(adjDraft.target)}</span>${accChipHTML(accountOn(adjDraft.target))}
+        </div>
+        <div class="adj-help">互换后：${formatCN(date)} 由「${accName(afterA ? afterA.accountId : null)}」发布；${formatCN(adjDraft.target)} 由「${accName(afterB ? afterB.accountId : null)}」发布。</div>`;
+    };
+
+    const input = blk1.querySelector('#adjTarget');
+    input.addEventListener('change', () => {
+      adjDraft.target = input.value;
+      renderPv();
+    });
+    input.addEventListener('input', () => {
+      adjDraft.target = input.value;
+      renderPv();
+    });
+    renderPv();
+  } else {
+    const isChange = adjDraft.mode === 'change';
+
+    /* 0. 修改：先展示该日当前发布 */
+    if (isChange) {
+      const curRec = recordOn(date);
+      const curInf = buildSchedule(date, date)[date];
+      const curAccId = (curRec && curRec.accountId) || (curInf && curInf.accountId) || accountOn(date);
+      const curName = (curInf && curInf.hasVideo) ? curInf.name
+        : ((curInf && curInf.extraOnly) ? '当天只有独立插入的发布' : '缺视频');
+      const blk0 = document.createElement('div');
+      blk0.className = 'adj-block';
+      blk0.innerHTML = `<div class="adj-label">该日当前的发布</div>
+        <div class="adj-swap-line">
+          <span class="pv-date">${formatCN(date)}</span>${accChipHTML(curAccId)}
+          <span class="pv-vname${(curInf && curInf.hasVideo) ? '' : ' empty'}">${escapeHTML(curName)}</span>
+          ${(curRec && curRec.manual) ? '<span class="pv-tag">已扣减</span>' : ''}
+        </div>
+        <div class="adj-help">修改会替换该日的发布账号与内容，可在下面重新指定。</div>`;
+      body.appendChild(blk0);
+    }
+
+    /* 1. 账号 */
+    const blk1 = document.createElement('div');
+    blk1.className = 'adj-block';
+    blk1.innerHTML = `<div class="adj-label">${isChange ? '改成由哪个账号发布' : `在 ${dateCN(date)} 插入的发布由哪个账号发`}</div>
+      <div class="adj-acc-opts" id="adjAccOpts"></div>`;
+    body.appendChild(blk1);
+
+    const opts = blk1.querySelector('#adjAccOpts');
+    IDS.forEach(id => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'adj-acc' + (id === adjDraft.accountId ? ' on' : '');
+      b.innerHTML = `<span class="dot" style="background:${ACCOUNTS[id].color}"></span>${escapeHTML(ACCOUNTS[id].name)}`;
+      b.addEventListener('click', () => {
+        if (adjDraft.accountId === id) return;
+        adjDraft.accountId = id;
+        adjDraft.videoIdx = null;
+        adjDraft.pickName = '';
+        adjDraft.useNew = false;
+        renderAdjustDialog();
+      });
+      opts.appendChild(b);
+    });
+
+    /* 2. 发布什么内容：轮播自动 / 指定已有内容 / 现场新增 */
+    const blk2 = document.createElement('div');
+    blk2.className = 'adj-block';
+    blk2.innerHTML = `<div class="adj-label">发布什么内容</div>
+      <div class="adj-inline" style="margin:-4px 0 9px">不选＝按轮播自动取该账号下一个该发的内容；也可以指定某一条，或现场新增一条新内容。</div>
+      <div class="adj-video-opts" id="adjVOpts"></div>`;
+    body.appendChild(blk2);
+
+    const vOpts = blk2.querySelector('#adjVOpts');
+    const list = state.contents[adjDraft.accountId] || [];
+    const videoBtn = (labelHTML, subHTML, on, disabled, onClick) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'adj-video' + (on ? ' on' : '');
+      b.innerHTML = `<span class="v-name">${labelHTML}</span>${subHTML || ''}`;
+      if (disabled) { b.disabled = true; b.style.opacity = '.55'; }
+      else b.addEventListener('click', onClick);
+      return b;
+    };
+
+    vOpts.appendChild(videoBtn('按轮播自动选', '<span class="v-auto">推荐</span>',
+      !adjDraft.useNew && !Number.isInteger(adjDraft.videoIdx), false,
+      () => { adjDraft.useNew = false; adjDraft.videoIdx = null; adjDraft.pickName = ''; renderAdjustDialog(); }));
+
+    list.forEach((v, i) => {
+      const nm = (v.name || '').trim() || '未命名视频';
+      const cnt = sanitizeCount(v.count);
+      vOpts.appendChild(videoBtn(escapeHTML(nm),
+        `<span class="v-left${cnt > 0 ? '' : ' zero'}">剩余 ${cnt} 次</span>`,
+        !adjDraft.useNew && adjDraft.videoIdx === i, cnt <= 0,
+        () => { adjDraft.useNew = false; adjDraft.videoIdx = i; adjDraft.pickName = nm; renderAdjustDialog(); }));
+    });
+
+    vOpts.appendChild(videoBtn('＋ 现场新增一条内容', '<span class="v-auto">新</span>',
+      !!adjDraft.useNew, false,
+      () => { adjDraft.useNew = true; adjDraft.videoIdx = null; adjDraft.pickName = ''; renderAdjustDialog(); }));
+
+    if (adjDraft.useNew) {
+      const blkNew = document.createElement('div');
+      blkNew.className = 'adj-block';
+      blkNew.innerHTML = `<div class="adj-label">新增内容</div>
+        <div class="adj-new-row">
+          <input type="text" id="adjNewName" placeholder="内容名称，如：秋季新品开箱" value="${escapeHTML(adjDraft.newName || '')}">
+          <input class="num" type="number" min="0" step="1" id="adjNewCount" value="${Math.max(0, Math.floor(Number(adjDraft.newCount) || 0))}">
+        </div>
+        <div class="adj-help">第二个框是该内容的可发布条数（默认 1）。确认后会写入该账号的内容库，并用于本次发布。</div>`;
+      body.appendChild(blkNew);
+      const nameIn = blkNew.querySelector('#adjNewName');
+      const cntIn = blkNew.querySelector('#adjNewCount');
+      nameIn.addEventListener('input', () => { adjDraft.newName = nameIn.value; renderPv(); });
+      cntIn.addEventListener('input', () => { adjDraft.newCount = Math.max(0, Math.floor(Number(cntIn.value) || 0)); renderPv(); });
+    }
+
+    /* 3. 插入方式 / 修改作用范围 */
+    const blk3 = document.createElement('div');
+    blk3.className = 'adj-block';
+    blk3.innerHTML = `<div class="adj-label">${isChange ? '修改作用范围' : '插入方式'}</div>
+      <div class="adj-mode-opts" id="adjModeOpts"></div>`;
+    body.appendChild(blk3);
+
+    const modeOpts = blk3.querySelector('#adjModeOpts');
+    const cards = isChange
+      ? [
+        { key: 'day', ico: '①', t: '只改此日', d: '只替换这一天的发布内容，后面各天的排期顺序完全不动。' },
+        { key: 'onward', ico: '②', t: '改此日并沿用', d: '从这一天起按新内容继续执行，后续账号轮播顺序随之调整。' }
+      ]
+      : [
+        { key: 'shift', ico: '①', t: '顺延：后续整体后移一天', d: '该日及之后的发布顺序整体后移一天，原有排期一条不丢。' },
+        { key: 'standalone', ico: '②', t: '不影响后续：额外插一条', d: '该日多出这一条独立发布，后续已有排期顺序完全不变。' }
+      ];
+    const curKey = isChange ? adjDraft.changeScope : adjDraft.insertMode;
+    cards.forEach(c => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'adj-mode' + (c.key === curKey ? ' on' : '');
+      b.innerHTML = `<span class="m-ico">${c.ico}</span><span><span class="m-t">${c.t}</span><span class="m-d">${c.d}</span></span>`;
+      b.addEventListener('click', () => {
+        if (isChange) adjDraft.changeScope = c.key; else adjDraft.insertMode = c.key;
+        renderAdjustDialog();
+      });
+      modeOpts.appendChild(b);
+    });
+
+    /* 4. 预览 */
+    const blk4 = document.createElement('div');
+    blk4.className = 'adj-block';
+    blk4.innerHTML = `<div class="adj-label">${isChange ? '修改后' : '插入后'}自该日起的发布安排</div>`;
+    const pv = document.createElement('div');
+    pv.className = 'adj-preview';
+    blk4.appendChild(pv);
+    body.appendChild(blk4);
+
+    function renderPv() {
+      const op = draftToOp();
+      if (!op) {
+        pv.innerHTML = `<div class="adj-warn">${(adjDraft.useNew && !(adjDraft.newName || '').trim())
+          ? '请先填写新增内容的名称。' : '当前设置不可用，请检查账号与日期。'}</div>`;
+        confirmBtn.disabled = true;
+        return;
+      }
+      confirmBtn.disabled = false;
+      const ops = (Array.isArray(state.adjustments) ? state.adjustments : []).concat([op]);
+
+      /* 「现场新增内容」在确认前先虚拟并入内容库，预览才准确 */
+      let override = null;
+      if (adjDraft.useNew) {
+        override = {};
+        override[adjDraft.accountId] = list.concat([{
+          name: (adjDraft.newName || '').trim() || '新内容',
+          count: Math.max(0, Math.floor(Number(adjDraft.newCount) || 0))
+        }]);
+      }
+
+      const rows = previewRows(ops, date, 7, override);
+      let html = '';
+      rows.forEach(r => {
+        if (!r.items.length) {
+          html += `<div class="adj-pv-row"><span class="pv-date">${formatCN(r.date)}</span><span class="pv-vname empty">无发布安排</span></div>`;
+          return;
+        }
+        r.items.forEach((it, k) => {
+          const isTarget = r.date === date;
+          const tag = isTarget ? (isChange ? '改为' : '插入') : (it.extra ? '不影响后续' : '');
+          html += pvRowHTML(r.date, it.accountId, tag, it.name, it.hasVideo,
+            isTarget ? 'orange' : (it.extra ? 'green' : ''), k > 0);
+        });
+      });
+      pv.innerHTML = html;
+    }
+    renderPv();
+  }
+}
+
+/* ---------- 确认调整：按最新排期重算「今天」的扣减快照 ---------- */
+
+/* 记录一条发布结算（扣 1 条并写 published 记录），返回记录或 null */
+function recordPublishOn(date, accountId, videoIdx, name, extraFields) {
+  const today = todayStr();
+  const list = state.contents[accountId] || [];
+  const nm = (name || '').trim() || '未命名视频';
+  let vi = Number.isInteger(videoIdx) ? videoIdx : -1;
+  const hit = (k) => k >= 0 && k < list.length && (((list[k].name || '').trim() || '未命名视频') === nm);
+  if (!hit(vi)) vi = list.findIndex((v, k) => hit(k));
+  if (vi < 0) return null;
+  list[vi].count = Math.max(0, sanitizeCount(list[vi].count) - 1);
+  state.pubCount[accountId] = (state.pubCount[accountId] || 0) + 1;
+  state.rot[accountId] = mod(vi + 1, list.length);
+  const rec = Object.assign({
+    date,
+    accountId,
+    videoIdx: vi,
+    name: (list[vi].name || '').trim() || '未命名视频',
+    status: 'published',
+    left: list[vi].count,
+    manual: true
+  }, extraFields || {});
+  if (!Array.isArray(state.published)) state.published = [];
+  state.published.push(rec);
+  state.published.sort((a, b) => (a.date < b.date ? -1 : (a.date > b.date ? 1 : 0)));
+  if (daysBetween(state.settledThrough, today) > 0) state.settledThrough = today;
+  return rec;
+}
+
+/* 回退某日的全部记录（含今天已落账的、以及手动扣减的记录） */
+function rollbackRecordsOn(date) {
+  if (!Array.isArray(state.published)) return 0;
+  const list = state.published;
+  let n = 0;
+  for (let i = list.length - 1; i >= 0; i--) {
+    const r = list[i];
+    if (r.date !== date) continue;
+    const st = String(r.status || 'published').toLowerCase();
+    if (st !== 'published' && st !== 'done') continue;
+    const videos = state.contents[r.accountId] || [];
+    let vi = r.videoIdx;
+    const nm = (r.name || '').trim() || '未命名视频';
+    const hit = (k) => k >= 0 && k < videos.length && (((videos[k].name || '').trim() || '未命名视频') === nm);
+    if (!hit(vi)) vi = videos.findIndex((v, k) => hit(k));
+    if (hit(vi)) videos[vi].count = sanitizeCount(videos[vi].count) + 1;
+    state.pubCount[r.accountId] = Math.max(0, (state.pubCount[r.accountId] || 0) - 1);
+    list.splice(i, 1);
+    n++;
+  }
+  return n;
+}
+
+/* 今天按最新排期应发布的条目（账号 + 指定内容优先，否则按轮播自动取）
+   keep：{ 'b:账号' | 'x:账号' : {videoIdx, name} }，用于重算时沿用当天已记录的指定内容，避免内容漂移 */
+function todayPublishItems(keep) {
+  const today = todayStr();
+  const ev = buildTimeline(today, today)[today];
+  const out = [];
+  IDS.forEach(id => {
+    const list = state.contents[id] || [];
+    entryPublishes(ev, id).forEach(p => {
+      const spec = resolveOpVideo(list, p.videoIdx, p.name);
+      const kp = keep && (keep[(p.extra ? 'x:' : 'b:') + id]);
+      const kept = kp ? resolveOpVideo(list, kp.videoIdx, kp.name) : -1;
+      let vi = -1;
+      if (spec >= 0 && sanitizeCount(list[spec].count) > 0) vi = spec;
+      else if (kept >= 0 && sanitizeCount(list[kept].count) > 0) vi = kept;
+      else vi = pickVideo(list, list.map(v => sanitizeCount(v.count)), state.rot[id]);
+      out.push({
+        accountId: id,
+        videoIdx: vi,
+        name: vi >= 0 ? ((list[vi].name || '').trim() || '未命名视频') : '',
+        extra: !!p.extra
+      });
+    });
+  });
+  return out;
+}
+
+/* 调整落库后，按最新排期重算「今天」的扣减：
+   先把今天已落账的记录全部回退，再按新排期逐条补扣，保证今天多发布就多扣、少发布就回退 */
+function resyncToday() {
+  const today = todayStr();
+  if (!state.confirmed) return { removed: 0, added: 0 };
+  if (daysBetween(state.settledThrough, today) < 0) return { removed: 0, added: 0 };
+
+  /* 轮播指针快照：回退 / 重算不应让轮播顺序漂移 */
+  const rotSnap = Object.assign({}, state.rot || {});
+
+  /* 已落账记录的指定内容快照：重算时若该条目仍在排期内，沿用原内容而不是重新轮播取值 */
+  const keep = {};
+  (state.published || []).forEach(r => {
+    if (!r || r.date !== today) return;
+    keep[(r.extra ? 'x:' : 'b:') + r.accountId] = { videoIdx: r.videoIdx, name: r.name };
+  });
+
+  const removed = rollbackRecordsOn(today);
+  state.rot = rotSnap;
+
+  let added = 0;
+  todayPublishItems(keep).forEach(it => {
+    if (recordPublishOn(today, it.accountId, it.videoIdx, it.name, { fromResync: true, extra: !!it.extra })) added++;
+  });
+  return { removed, added };
+}
+
+/* 确认调整 */
+document.getElementById('btnAdjConfirm').addEventListener('click', () => {
+  const op = draftToOp();
+  if (!op) { toast('请先补全调整信息'); return; }
+  const today = todayStr();
+
+  /* 现场新增内容 → 先写入该账号的内容库 */
+  let newToIdx = -1;
+  if ((op.kind === 'insert' || op.kind === 'change') && op.name && !Number.isInteger(op.videoIdx)) {
+    const list = state.contents[op.accountId] || (state.contents[op.accountId] = []);
+    const nm = String(op.name).trim();
+    const found = list.findIndex(v => (((v.name || '').trim() || '未命名视频') === nm));
+    if (found >= 0) {
+      newToIdx = found;
+    } else {
+      const cnt = Math.max(0, Math.floor(Number(adjDraft && adjDraft.newCount) || 0));
+      list.push({ name: nm, count: cnt });
+      newToIdx = list.length - 1;
+    }
+  }
+
+  const op2 = Object.assign({}, op);
+  if (newToIdx >= 0) op2.videoIdx = newToIdx;
+
+  if (op2.kind === 'swap' && op2.a === today && todayManuallySettled()) {
+    toast('今天已手动扣减，不能再互换；可改为插入新的发布');
+    return;
+  }
+
+  if (!Array.isArray(state.adjustments)) state.adjustments = [];
+  state.adjustments.push(op2);
+
+  /* 今天已落账（例如已手动扣减 / 已自动结算）时，按最新排期重算今天的扣减 */
+  let extra = '';
+  if (op2.kind !== 'swap' && op2.date === today && daysBetween(state.settledThrough, today) >= 0) {
+    const r = resyncToday();
+    if (r.added > 0) extra = `，并按新排期扣减今天的 ${r.added} 条发布`;
+    else if (r.removed > 0) extra = `，并回退今天多余的 ${r.removed} 条扣减`;
+    else extra = '（今天没有需要扣减的发布）';
+    if (op2.kind === 'insert' && (op2.mode !== 'standalone') && r.added === 0 && r.removed === 0) {
+      extra += '，该账号暂无可扣减内容';
+    }
+  }
+
+  persist();
+  renderAll();
+  let msg = '';
+  if (op2.kind === 'swap') msg = '已互换两天的发布安排';
+  else if (op2.kind === 'change') msg = op2.scope === 'onward'
+    ? '已修改该日发布，且后续按新内容继续'
+    : '已修改该日发布（后续顺序不变）';
+  else msg = op2.mode === 'standalone'
+    ? '已插入一条独立发布，后续顺序不变'
+    : '已插入发布，后续整体顺延一天';
+  if (newToIdx >= 0) msg += `；内容「${op2.name}」已加入内容库`;
+  closeAdjustDialog();
+  toast(msg + extra);
+});
+
+/* 撤销最近一次调整 */
+function undoLastAdjustment() {
+  const list = Array.isArray(state.adjustments) ? state.adjustments : [];
+  if (!list.length) { toast('没有可撤销的临时调整'); return; }
+  const op = list.pop();
+
+  /* 若该调整动过「今天」且今天已落账，撤销后同样按排期重算今天的扣减 */
+  let extra = '';
+  if (op && op.date === todayStr() && daysBetween(state.settledThrough, todayStr()) >= 0) {
+    const r = resyncToday();
+    if (r.removed > 0) extra = `，并回退今天的 ${r.removed} 条扣减`;
+    else if (r.added > 0) extra = `，并补扣今天的 ${r.added} 条发布`;
+  }
+
+  persist();
+  renderAll();
+  toast('已撤销最近一次临时调整' + extra);
+}
+
+/* =========================================================
+   发布扣减：手动扣减 / 撤销「此视频未发」（v8）
+   ========================================================= */
+
+/* 取某日的结算记录（无则返回 null） */
+function recordOn(date) {
+  const list = Array.isArray(state.published) ? state.published : [];
+  return list.find(r => r.date === date) || null;
+}
+
+/* 今天是否已手动扣减（结算进度已推进到今天且存在今天的手动记录） */
+function todayManuallySettled() {
+  const today = todayStr();
+  if (daysBetween(state.settledThrough, today) < 0) return false;
+  return (Array.isArray(state.published) ? state.published : []).some(r => r.date === today && r.manual);
+}
+
+/* v10：插入 / 修改「今天」的补扣统一由 resyncToday() 按最新排期重算，
+   原 settleInsertToday / rollbackInsertSettle 已移除（改为通用 recordPublishOn / rollbackRecordsOn） */
+
+/* 手动触发某日发布扣减并实时同步
+   - 适用于今天及之前的日期
+   - 今天提前扣减后会把结算进度推进到今天，次日自动结算不再重复扣减 */
+function manualPublish(date) {
+  if (!state.confirmed) { toast('请先在侧边栏点「设置发布计划」完成排期'); return; }
+
+  const today = todayStr();
+  if (daysBetween(date, today) < 0) { toast('只能对今天及之前的日期手动扣减'); return; }
+
+  settle();   // 先把历史发布日结算到昨天，避免与自动扣减重复
+
+  if (recordOn(date)) { toast('该日已有发布记录，无需重复扣减'); return; }
+
+  const accountId = accountOn(date);
+  if (!accountId) { toast('该日没有发布安排'); return; }
+
+  const list = state.contents[accountId] || [];
+  const vi = pickVideo(list, list.map(v => sanitizeCount(v.count)), state.rot[accountId]);
+  if (vi < 0 || sanitizeCount(list[vi].count) <= 0) {
+    toast('该账号暂无可发布的视频（剩余次数均为 0）');
+    renderAll();
+    return;
+  }
+
+  list[vi].count = Math.max(0, sanitizeCount(list[vi].count) - 1);
+  state.pubCount[accountId] = (state.pubCount[accountId] || 0) + 1;
+  state.rot[accountId] = mod(vi + 1, list.length);
+
+  state.published.push({
+    date,
+    accountId,
+    videoIdx: vi,
+    name: (list[vi].name || '').trim() || '未命名视频',
+    status: 'published',
+    left: list[vi].count,
+    manual: true
+  });
+  state.published.sort((a, b) => (a.date < b.date ? -1 : (a.date > b.date ? 1 : 0)));
+
+  // 今天已提前扣减：推进结算进度，保证次日自动结算不重复扣
+  if (daysBetween(state.settledThrough, date) > 0) state.settledThrough = date;
+
+  persist();
+  renderAll();
+  toast(`已记录 ${formatCN(date)} 发布，视频剩余次数 -1`);
+}
+
+/* 撤销某日已发生的发布扣减（此视频未发） */
+function undoPublish(date) {
+  if (!state.confirmed) return;
+  const list = Array.isArray(state.published) ? state.published : [];
+  let idx = -1;
+  for (let i = list.length - 1; i >= 0; i--) { if (list[i].date === date) { idx = i; break; } }
+  if (idx < 0) { toast('该日没有可撤销的发布记录'); return; }
+  const rec = list[idx];
+
+  if (rec.status === 'published' && rec.accountId) {
+    const videos = state.contents[rec.accountId] || [];
+    const recName = (rec.name || '').trim() || '未命名视频';
+    let vi = rec.videoIdx;
+    const hit = (i) => i >= 0 && i < videos.length &&
+      (((videos[i].name || '').trim() || '未命名视频') === recName);
+    if (!hit(vi)) vi = videos.findIndex((v, i) => hit(i));
+
+    if (hit(vi)) videos[vi].count = sanitizeCount(videos[vi].count) + 1;
+    state.pubCount[rec.accountId] = Math.max(0, (state.pubCount[rec.accountId] || 0) - 1);
+
+    // 撤销最近一条（即当前结算点当天）时回退轮播指针，使该视频下次仍被优先轮到
+    if (idx === list.length - 1 && hit(vi)) {
+      state.rot[rec.accountId] = mod(vi, Math.max(1, videos.length));
+    }
+  }
+
+  list.splice(idx, 1);
+
+  // 该日已无任何发布记录，且撤销的正是「今天已提前扣减」的那一次：结算进度回退，恢复今天待发布状态
+  const stillHas = list.some(r => r.date === date);
+  if (!stillHas && state.settledThrough === date) state.settledThrough = addDays(date, -1);
+
+  persist();
+  renderAll();
+  toast('已撤销该日扣减，视频剩余次数 +1');
+}
+
+document.getElementById('btnAdjCancel').addEventListener('click', closeAdjustDialog);
+document.getElementById('btnCloseAdj').addEventListener('click', closeAdjustDialog);
+adjOverlay.addEventListener('mousedown', ev => {
+  if (ev.target === adjOverlay) closeAdjustDialog();
+});
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape') {
+    if (!ctxMenuEl.hidden) hideCtxMenu();
+    else if (!document.getElementById('notifMenu').hidden) hideNotifMenu();
+    else if (document.getElementById('notifCenter').classList.contains('open')) document.getElementById('notifCenter').classList.remove('open');
+    else if (invOverlay.classList.contains('open')) closeInventory();
+    else if (setOverlay.classList.contains('open')) closeSettings();
+    else if (adjOverlay.classList.contains('open')) closeAdjustDialog();
+    else if (document.getElementById('resetConfirmOverlay').classList.contains('open')) closeResetConfirm();
+  }
+});
+
+/* =========================================================
+   重置确认弹窗
+   ========================================================= */
+function openResetConfirm() {
+  document.getElementById('resetConfirmOverlay').classList.add('open');
+  document.getElementById('resetConfirmOverlay').hidden = false;
+  document.getElementById('resetConfirmInput').value = '';
+  document.getElementById('resetConfirmError').style.display = 'none';
+  document.getElementById('resetConfirmInput').focus();
+}
+
+function closeResetConfirm() {
+  document.getElementById('resetConfirmOverlay').classList.remove('open');
+  document.getElementById('resetConfirmOverlay').hidden = true;
+}
+
+document.getElementById('btnReset').addEventListener('click', openResetConfirm);
+document.getElementById('btnResetCancel').addEventListener('click', closeResetConfirm);
+document.getElementById('btnResetConfirmCancel').addEventListener('click', closeResetConfirm);
+document.getElementById('resetConfirmOverlay').addEventListener('mousedown', ev => {
+  if (ev.target === document.getElementById('resetConfirmOverlay')) closeResetConfirm();
+});
+document.getElementById('btnResetConfirmOk').addEventListener('click', () => {
+  const val = document.getElementById('resetConfirmInput').value.trim();
+  if (val !== '我确定') {
+    document.getElementById('resetConfirmError').textContent = '请输入正确的确认文字「我确定」';
+    document.getElementById('resetConfirmError').style.display = 'block';
+    return;
+  }
+  closeResetConfirm();
+  /* 只清空业务数据，设置（含预警阈值）原样保留 */
+  const settings = normalizeSettings(state.settings || {});
+  state.contents = defaultContents();          // 各账号恢复为一条空视频
+  state.published = [];
+  state.adjustments = [];
+  state.calibrations = [];
+  state.notifications = [];
+  state.notifDismissed = [];
+  state.slots = [null, null, null];
+  state.confirmed = false;
+  state.startDate = todayStr();
+  state.pubCount = emptyCounts();
+  state.rot = emptyCounts();
+  state.settledThrough = addDays(todayStr(), -1);
+  state.settings = settings;
+  state.viewMonth = null;
+  persist();
+  renderAll();
+  toast('所有数据已重置，设置已保留');
+});
+
+/* =========================================================
+   启动
+   ========================================================= */
+/* =========================================================
+   主题切换（跟随系统 / 浅色 / 深色）
+   ========================================================= */
+function applyTheme(preference) {
+  let theme;
+  if (preference === 'auto') {
+    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  } else {
+    theme = preference;
+  }
+  document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '');
+}
+
+// 监听系统主题变化
+if (window.matchMedia) {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (state.settings?.theme === 'auto') applyTheme('auto');
+  });
+}
+
+(function init() {
+  applyTheme(state.settings?.theme || 'auto');
+
+  let lastToday = todayStr();
+
+  settle();          // 打开页面即把历史发布日（发布日 < 今日）自动结算、扣减；今天不扣
+  renderAll();       // 立即按最新数据渲染，刷新今日「缺视频」标记
+  persist();
+
+  // 跨天 / 长时间打开：每 60 秒检查一次是否有新的发布日需要扣减或日期已跨天
+  const refresh = () => {
+    if (!state.confirmed) return;
+    const before = state.settledThrough;
+    const dayChanged = todayStr() !== lastToday;
+    settle();
+    if (state.settledThrough !== before || dayChanged) {
+      lastToday = todayStr();
+      persist();
+      renderAll();
+      if (state.settledThrough !== before) toast('检测到新的发布日，已自动扣减');
+    }
+  };
+
+  setInterval(refresh, 60000);
+
+  // 页面重新可见（切回标签页 / 从后台唤醒）时立即刷新今日状态
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+  window.addEventListener('focus', refresh);
+})();
+</script>
+</body>
+</html>
